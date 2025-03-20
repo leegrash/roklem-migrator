@@ -1,7 +1,4 @@
 ﻿using Roklem_Migrator.Services;
-using System;
-using System.IO;
-using System.Security.Cryptography.X509Certificates;
 
 class Program
 {
