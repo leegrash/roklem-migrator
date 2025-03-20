@@ -13,14 +13,17 @@ class Program
         else
         {
             Console.WriteLine("No file path was given as argument, provide file path:");
-            filePath = Console.ReadLine();
+            filePath = Console.ReadLine() ?? string.Empty;
         }
 
         var fileReader = new FileReaderService();
 
         try
         {
-            fileReader.ReadFile(filePath);
+            if (filePath.Length > 0)
+            {
+                fileReader.ReadFile(filePath);
+            }
         }
         catch (FileNotFoundException)
         {
