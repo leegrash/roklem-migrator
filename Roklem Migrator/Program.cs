@@ -1,6 +1,7 @@
 ﻿using Roklem_Migrator.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Roklem_Migrator.Services.Interfaces;
+using System;
 
 
 class Program
@@ -11,24 +12,32 @@ class Program
         ConfigureServices(serviceCollection);
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
-        var filePathHandler = serviceProvider.GetRequiredService<FilePathHandlerService>();
-        var fileReader = serviceProvider.GetRequiredService<FileReaderService>();
+        RunApplication(args, serviceProvider);
+    }
+
+    private static void ConfigureServices(IServiceCollection services)
+    {
+        var serviceTypes = typeof(Program).Assembly.GetTypes()
+        .Where(t => t.IsClass && !t.IsAbstract && t.GetInterfaces().Any(i => i.Name.StartsWith("I")))
+        .ToList();
+
+        foreach (var type in serviceTypes)
+        {
+            var interfaceType = type.GetInterfaces().FirstOrDefault();
+            if (interfaceType != null)
+            {
+                services.AddSingleton(interfaceType, type);
+            }
+        }
+
+    }
+
+    private static void RunApplication(string[] args, IServiceProvider serviceProvider)
+    {
+        var filePathHandler = serviceProvider.GetRequiredService<IFilePathHandlerService>();
+        var fileReader = serviceProvider.GetRequiredService<IFileReaderService>();
         var codeMigrator = serviceProvider.GetRequiredService<ICodeMigratorService>();
 
-        RunApplication(args, filePathHandler, fileReader, codeMigrator);
-    }
-
-    private static void ConfigureServices(IServiceCollection serviceCollection)
-    {
-        serviceCollection.AddSingleton<FileReaderService>();
-        serviceCollection.AddSingleton<FilePathHandlerService>();
-        serviceCollection.AddSingleton<IVBSyntaxTreeService, VBSyntaxTreeService>();
-        serviceCollection.AddSingleton<ICodeMigratorService, CodeMigratorService>();
-
-    }
-
-    private static void RunApplication(string[] args, FilePathHandlerService filePathHandler, FileReaderService fileReader, ICodeMigratorService codeMigrator)
-    {
         string filePath = filePathHandler.GetFilePath(args);
 
         try

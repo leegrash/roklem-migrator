@@ -1,6 +1,8 @@
-﻿namespace Roklem_Migrator.Services
+﻿using Roklem_Migrator.Services.Interfaces;
+
+namespace Roklem_Migrator.Services
 {
-    internal class FilePathHandlerService
+    internal class FilePathHandlerService : IFilePathHandlerService
     {
         public string GetFilePath(string[] args)
         {

@@ -14,7 +14,9 @@ namespace Roklem_Migrator.Services
         {
             var syntaxTree = _VBSyntaxTreeService.ParseSyntaxTree(codeLines);
 
-            _VBSyntaxTreeService.PrintSyntaxNodeStructure(syntaxTree.GetRoot());
+            //_VBSyntaxTreeService.PrintSyntaxNodeStructure(syntaxTree.GetRoot());
+
+
         }
     }
 }
