@@ -5,9 +5,11 @@ namespace Roklem_Migrator.Services
     internal class CodeMigratorService : ICodeMigratorService
     {
         private readonly IVBSyntaxTreeService _VBSyntaxTreeService;
-        
-        public CodeMigratorService(IVBSyntaxTreeService vBSyntaxTreeService) { 
+        private readonly IInvokeAzureAIRequestResponseService _InvokeAzureAIRequestResponseService;
+
+        public CodeMigratorService(IVBSyntaxTreeService vBSyntaxTreeService, IInvokeAzureAIRequestResponseService invokeAzureAIRequestResponseService) { 
             _VBSyntaxTreeService = vBSyntaxTreeService;
+            _InvokeAzureAIRequestResponseService = invokeAzureAIRequestResponseService;
         }
 
         public void Migrate(IEnumerable<string> codeLines)
@@ -16,7 +18,7 @@ namespace Roklem_Migrator.Services
 
             //_VBSyntaxTreeService.PrintSyntaxNodeStructure(syntaxTree.GetRoot());
 
-
+            _InvokeAzureAIRequestResponseService.InvokeRequestResponse(codeLines).Wait();
         }
     }
 }
