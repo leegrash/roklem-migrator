@@ -1,5 +1,6 @@
 ﻿using Roklem_Migrator.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Roklem_Migrator.Services.Interfaces;
 
 
 class Program
@@ -12,7 +13,7 @@ class Program
 
         var filePathHandler = serviceProvider.GetRequiredService<FilePathHandlerService>();
         var fileReader = serviceProvider.GetRequiredService<FileReaderService>();
-        var codeMigrator = serviceProvider.GetRequiredService<CodeMigratorService>();
+        var codeMigrator = serviceProvider.GetRequiredService<ICodeMigratorService>();
 
         RunApplication(args, filePathHandler, fileReader, codeMigrator);
     }
@@ -21,11 +22,12 @@ class Program
     {
         serviceCollection.AddSingleton<FileReaderService>();
         serviceCollection.AddSingleton<FilePathHandlerService>();
-        serviceCollection.AddSingleton<CodeMigratorService>();
+        serviceCollection.AddSingleton<IVBSyntaxTreeService, VBSyntaxTreeService>();
+        serviceCollection.AddSingleton<ICodeMigratorService, CodeMigratorService>();
 
     }
 
-    private static void RunApplication(string[] args, FilePathHandlerService filePathHandler, FileReaderService fileReader, CodeMigratorService codeMigrator)
+    private static void RunApplication(string[] args, FilePathHandlerService filePathHandler, FileReaderService fileReader, ICodeMigratorService codeMigrator)
     {
         string filePath = filePathHandler.GetFilePath(args);
 
