@@ -46,6 +46,11 @@ class Program
             if (filePath.Length > 0)
             {
                 fileReader.ReadFile(filePath);
+
+                foreach (var line in fileReader.ReadFile(filePath))
+                {
+                    Console.WriteLine(line);
+                }
             }
         }
         catch (FileNotFoundException)
