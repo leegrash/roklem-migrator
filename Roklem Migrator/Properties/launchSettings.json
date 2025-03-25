@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Roklem Migrator": {
+      "commandName": "Project",
+      "remoteDebugEnabled": true
+    }
+  }
+}

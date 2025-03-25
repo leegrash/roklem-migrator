@@ -10,8 +10,8 @@ class Program
         ConfigureServices(serviceCollection);
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
-        var filePathHandler = serviceProvider.GetService<FilePathHandlerService>();
-        var fileReader = serviceProvider.GetService<FileReaderService>();
+        var filePathHandler = serviceProvider.GetRequiredService<FilePathHandlerService>();
+        var fileReader = serviceProvider.GetRequiredService<FileReaderService>();
 
         RunApplication(args, filePathHandler, fileReader);
     }
