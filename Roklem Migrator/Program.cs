@@ -29,7 +29,6 @@ class Program
                 services.AddSingleton(interfaceType, type);
             }
         }
-
     }
 
     private static void RunApplication(string[] args, IServiceProvider serviceProvider)

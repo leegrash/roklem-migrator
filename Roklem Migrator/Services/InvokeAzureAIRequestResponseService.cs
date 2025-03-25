@@ -17,6 +17,7 @@ namespace Roklem_Migrator.Services
                 ServerCertificateCustomValidationCallback =
                         (httpRequestMessage, cert, cetChain, policyErrors) => { return true; }
             };
+
             using (var client = new HttpClient(handler))
             {
                 var requestBody = $@"{{
