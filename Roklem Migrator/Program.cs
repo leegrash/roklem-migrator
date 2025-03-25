@@ -10,40 +10,25 @@ class Program
         ConfigureServices(serviceCollection);
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
+        var filePathHandler = serviceProvider.GetService<FilePathHandlerService>();
         var fileReader = serviceProvider.GetService<FileReaderService>();
 
-        if (fileReader != null)
-        {
-            RunApplication(args, fileReader);
-        }
-        else
-        {
-            Console.Error.WriteLine("FileReaderService could not be resolved.");
-        }
+        RunApplication(args, filePathHandler, fileReader);
     }
 
     private static void ConfigureServices(IServiceCollection serviceCollection)
     {
         serviceCollection.AddSingleton<FileReaderService>();
+        serviceCollection.AddSingleton<FilePathHandlerService>();
     }
 
-    private static void RunApplication(string[] args, FileReaderService fileReader)
+    private static void RunApplication(string[] args, FilePathHandlerService filePathHandler, FileReaderService fileReader)
     {
-        string filePath;
-
-        if (args.Length > 0)
-        {
-            filePath = args[0];
-        }
-        else
-        {
-            Console.WriteLine("No file path was given as argument, provide file path:");
-            filePath = Console.ReadLine() ?? string.Empty;
-        }
+        string filePath = filePathHandler.GetFilePath(args);
 
         try
         {
-            if (filePath.Length > 0)
+            if (filePathHandler.IsFilePathValid(filePath))
             {
                 fileReader.ReadFile(filePath);
 

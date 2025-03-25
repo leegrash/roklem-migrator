@@ -1,6 +1,6 @@
 ﻿namespace Roklem_Migrator.Services
 {
-    class FileReaderService
+    internal class FileReaderService
     {
         public IEnumerable<string> ReadFile(string filePath)
         {
