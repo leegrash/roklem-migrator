@@ -12,17 +12,20 @@ class Program
 
         var filePathHandler = serviceProvider.GetRequiredService<FilePathHandlerService>();
         var fileReader = serviceProvider.GetRequiredService<FileReaderService>();
+        var codeMigrator = serviceProvider.GetRequiredService<CodeMigratorService>();
 
-        RunApplication(args, filePathHandler, fileReader);
+        RunApplication(args, filePathHandler, fileReader, codeMigrator);
     }
 
     private static void ConfigureServices(IServiceCollection serviceCollection)
     {
         serviceCollection.AddSingleton<FileReaderService>();
         serviceCollection.AddSingleton<FilePathHandlerService>();
+        serviceCollection.AddSingleton<CodeMigratorService>();
+
     }
 
-    private static void RunApplication(string[] args, FilePathHandlerService filePathHandler, FileReaderService fileReader)
+    private static void RunApplication(string[] args, FilePathHandlerService filePathHandler, FileReaderService fileReader, CodeMigratorService codeMigrator)
     {
         string filePath = filePathHandler.GetFilePath(args);
 
@@ -30,12 +33,7 @@ class Program
         {
             if (filePathHandler.IsFilePathValid(filePath))
             {
-                fileReader.ReadFile(filePath);
-
-                foreach (var line in fileReader.ReadFile(filePath))
-                {
-                    Console.WriteLine(line);
-                }
+                codeMigrator.Migrate(fileReader.ReadFile(filePath));
             }
         }
         catch (FileNotFoundException)
