@@ -18,7 +18,15 @@ namespace Roklem_Migrator.Services
 
             //_VBSyntaxTreeService.PrintSyntaxNodeStructure(syntaxTree.GetRoot());
 
-            _InvokeAzureAIRequestResponseService.InvokeRequestResponse(codeLines).Wait();
+            try
+            {
+                var response = _InvokeAzureAIRequestResponseService.InvokeRequestResponse(codeLines).Result;
+                Console.WriteLine(response);
+            }
+            catch
+            {
+
+            }
         }
     }
 }

@@ -1,69 +1,60 @@
 ﻿using Roklem_Migrator.Services.Interfaces;
-using System.Net.Http.Headers;
-using System;
-using System.IO;
+using Azure.AI.OpenAI;
+using OpenAI.Chat;
+using Azure;
+
 
 namespace Roklem_Migrator.Services
 {
     internal class InvokeAzureAIRequestResponseService : IInvokeAzureAIRequestResponseService
     {
-        public async Task InvokeRequestResponse(IEnumerable<string> codeLines)
+        public async Task<string> InvokeRequestResponse(IEnumerable<string> codeLines)
         {
-            var vbCode = string.Join("\n", codeLines);
-
-            var handler = new HttpClientHandler()
+            var endpoint = Environment.GetEnvironmentVariable("AzureEndpoint");
+            if (string.IsNullOrEmpty(endpoint))
             {
-                ClientCertificateOptions = ClientCertificateOption.Manual,
-                ServerCertificateCustomValidationCallback =
-                        (httpRequestMessage, cert, cetChain, policyErrors) => { return true; }
-            };
+                Console.WriteLine("Please set the AZURE_OPENAI_ENDPOINT environment variable.");
+                throw new InvalidOperationException("Endpoint is not set.");
+            }
 
-            using (var client = new HttpClient(handler))
+            var key = Environment.GetEnvironmentVariable("AzureKey");
+            if (string.IsNullOrEmpty(key))
             {
-                var requestBody = $@"{{
-                      ""messages"": [
-                        {{
-                          ""role"": ""user"",
-                          ""content"": ""{vbCode}""
-                        }}
-                      ],
-                      ""max_tokens"": 4096,
-                      ""temperature"": 1,
-                      ""top_p"": 1,
-                      ""stop"": []
-                    }}";
+                Console.WriteLine("Please set the AZURE_OPENAI_KEY environment variable.");
+                throw new InvalidOperationException("Key is not set.");
+            }
 
-                string apiKey = Environment.GetEnvironmentVariable("AzureAIKey");
+            AzureKeyCredential credential = new AzureKeyCredential(key);
 
-                if (string.IsNullOrEmpty(apiKey))
+            var azureClient = new AzureOpenAIClient(new Uri(endpoint), credential);
+
+            ChatClient chatClient = azureClient.GetChatClient("gpt-4o-mini");
+
+            var messages = new List<ChatMessage>
                 {
-                    throw new Exception("A key should be provided to invoke the endpoint");
-                }
+                    new SystemChatMessage("You are a developer tasked to migrate this set of Visual Basic .NetFramework Code to Visual Basic .Net Core. If it is possible to migrate, do it and return only the code - no other text or characters. If not, return Could not migrate code."),
+                    new UserChatMessage(string.Join(Environment.NewLine, codeLines))
+                };
 
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
-                client.BaseAddress = new Uri(Environment.GetEnvironmentVariable("AzureAIUri"));
+            try
+            {
+                var completion = await chatClient.CompleteChatAsync(messages);
 
-                var content = new StringContent(requestBody);
-                client.DefaultRequestHeaders.Add("Accept", "application/json");
-                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-
-                HttpResponseMessage response = await client.PostAsync("", content);
-
-                if (response.IsSuccessStatusCode)
+                if (completion != null)
                 {
-                    string result = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine("Result: {0}", result);
+                    var chatResult = completion.Value;
+                    return chatResult.Content[^1].Text;
                 }
                 else
                 {
-                    Console.WriteLine(string.Format("The request failed with status code: {0}", response.StatusCode));
-                    Console.WriteLine(response.Headers.ToString());
-
-                    string responseContent = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine(responseContent);
+                    Console.WriteLine("No response received.");
+                    throw new InvalidOperationException("No response received.");
                 }
             }
-
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Error during chat completion: {ex.Message}", ex);
+            }
         }
     }
 }

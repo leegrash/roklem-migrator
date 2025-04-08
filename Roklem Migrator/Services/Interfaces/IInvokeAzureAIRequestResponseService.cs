@@ -2,6 +2,6 @@
 {
     internal interface IInvokeAzureAIRequestResponseService
     {
-        Task InvokeRequestResponse(IEnumerable<string> codeLines);
+        Task<string> InvokeRequestResponse(IEnumerable<string> codeLines);
     }
 }
