@@ -3,7 +3,6 @@ using Azure.AI.OpenAI;
 using OpenAI.Chat;
 using Azure;
 
-
 namespace Roklem_Migrator.Services
 {
     internal class InvokeAzureAIRequestResponseService : IInvokeAzureAIRequestResponseService
@@ -32,7 +31,7 @@ namespace Roklem_Migrator.Services
 
             var messages = new List<ChatMessage>
                 {
-                    new SystemChatMessage("You are a developer tasked to migrate this set of Visual Basic .NetFramework Code to Visual Basic .Net Core. If it is possible to migrate, do it and return only the code - no other text or characters. If not, return Could not migrate code."),
+                    new SystemChatMessage("You are a developer tasked to migrate this set of Visual Basic .NetFramework Code to Visual Basic .Net Core. If it is possible to migrate, do it and return only the code - no other text or characters. If not, return Could not migrate code. The response should not include any markdown characters."),
                     new UserChatMessage(string.Join(Environment.NewLine, codeLines))
                 };
 
