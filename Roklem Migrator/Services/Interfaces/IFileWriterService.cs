@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Roklem_Migrator.Services.Interfaces
 {
-    internal interface ICodeMigratorService
+    internal interface IFileWriterService
     {
-        public string Migrate(IEnumerable<string> codeLines);
+        void WriteToFile(string oldPath, string fileContent);
     }
 }

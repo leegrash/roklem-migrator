@@ -40,6 +40,7 @@ namespace Roklem_Migrator.Services
                 string newDirectoryPath = Path.Combine(grandParantDirectory, "roklem-output");
                 
                 string newPath = Path.Combine(newDirectoryPath, fileName);
+                
                 return newPath;
             }
             else

@@ -1,8 +1,5 @@
-﻿using Roklem_Migrator.Services;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Roklem_Migrator.Services.Interfaces;
-using System;
-
 
 class Program
 {
@@ -36,6 +33,7 @@ class Program
         var filePathHandler = serviceProvider.GetRequiredService<IFilePathHandlerService>();
         var fileReader = serviceProvider.GetRequiredService<IFileReaderService>();
         var codeMigrator = serviceProvider.GetRequiredService<ICodeMigratorService>();
+        var fileWriter = serviceProvider.GetRequiredService<IFileWriterService>();
 
         string filePath = filePathHandler.GetFilePath(args);
 
@@ -43,7 +41,9 @@ class Program
         {
             if (filePathHandler.IsFilePathValid(filePath))
             {
-                codeMigrator.Migrate(fileReader.ReadFile(filePath));
+                string migratedCode = codeMigrator.Migrate(fileReader.ReadFile(filePath));
+
+                fileWriter.WriteToFile(filePath, migratedCode);
             }
         }
         catch (FileNotFoundException)
