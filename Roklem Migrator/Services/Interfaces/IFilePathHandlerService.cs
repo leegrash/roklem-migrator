@@ -4,5 +4,6 @@
     {
         string GetFilePath(string[] args);
         bool IsFilePathValid(string filePath);
+        string GetNewFilePath(string oldFilePath);
     }
 }
