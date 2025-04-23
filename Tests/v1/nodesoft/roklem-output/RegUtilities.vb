@@ -1,1 +1,1 @@
-Could not migrate code.
+Could not migrate code because the Microsoft.Win32.Registry namespace is not fully supported in .NET Core, particularly with respect to accessing certain registry keys and values which require higher privileges or are not available across different platforms.
