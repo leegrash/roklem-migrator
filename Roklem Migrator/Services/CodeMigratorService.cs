@@ -4,24 +4,31 @@ namespace Roklem_Migrator.Services
 {
     internal class CodeMigratorService : ICodeMigratorService
     {
-        private readonly IVBSyntaxTreeService _VBSyntaxTreeService;
         private readonly IInvokeAzureAIRequestResponseService _InvokeAzureAIRequestResponseService;
+        private readonly IFileLocatorService _FileLocatorService;
 
-        public CodeMigratorService(IVBSyntaxTreeService vBSyntaxTreeService, IInvokeAzureAIRequestResponseService invokeAzureAIRequestResponseService, IFileWriterService fileWriterService) { 
-            _VBSyntaxTreeService = vBSyntaxTreeService;
+        public CodeMigratorService(IInvokeAzureAIRequestResponseService invokeAzureAIRequestResponseService, IFileWriterService fileWriterService, IFileLocatorService fileLocator) { 
             _InvokeAzureAIRequestResponseService = invokeAzureAIRequestResponseService;
+            _FileLocatorService = fileLocator;
         }
 
-        public string Migrate(IEnumerable<string> codeLines)
+        public bool Migrate(string filePath)
         {
-            var syntaxTree = _VBSyntaxTreeService.ParseSyntaxTree(codeLines);
-
-            //_VBSyntaxTreeService.PrintSyntaxNodeStructure(syntaxTree.GetRoot());
-
             try
             {
-                var response = _InvokeAzureAIRequestResponseService.InvokeRequestResponse(codeLines).Result;
-                return response;
+                List<string> files = _FileLocatorService.locateFiles(filePath);
+
+                Console.WriteLine("Files located:");
+                _FileLocatorService.printFileList(files);
+
+                List<string> fileTypes = _FileLocatorService.getFileTypes(files);
+
+                Console.WriteLine("\nFile types:");
+                _FileLocatorService.printFileList(fileTypes);
+
+                //var response = _InvokeAzureAIRequestResponseService.InvokeRequestResponse(codeLines).Result;
+                //return response;
+                return true;
             }
             catch
             {

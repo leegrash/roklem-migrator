@@ -2,6 +2,6 @@
 {
     internal interface ICodeMigratorService
     {
-        public string Migrate(IEnumerable<string> codeLines);
+        public bool Migrate(string filePath);
     }
 }

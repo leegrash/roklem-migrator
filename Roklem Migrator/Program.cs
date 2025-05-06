@@ -31,9 +31,7 @@ class Program
     private static void RunApplication(string[] args, IServiceProvider serviceProvider)
     {
         var filePathHandler = serviceProvider.GetRequiredService<IFilePathHandlerService>();
-        var fileReader = serviceProvider.GetRequiredService<IFileReaderService>();
         var codeMigrator = serviceProvider.GetRequiredService<ICodeMigratorService>();
-        var fileWriter = serviceProvider.GetRequiredService<IFileWriterService>();
 
         string filePath = filePathHandler.GetFilePath(args);
 
@@ -41,9 +39,9 @@ class Program
         {
             if (filePathHandler.IsFilePathValid(filePath))
             {
-                string migratedCode = codeMigrator.Migrate(fileReader.ReadFile(filePath));
+                codeMigrator.Migrate(filePath);
 
-                fileWriter.WriteToFile(filePath, migratedCode);
+                Console.WriteLine("Done");
             }
         }
         catch (FileNotFoundException)

@@ -8,7 +8,7 @@ namespace Roklem_Migrator.Services
         {
             if (args.Length > 0)
             {
-                return args[0];
+                return args[0].Trim('"');
             }
             else
             {
@@ -19,7 +19,7 @@ namespace Roklem_Migrator.Services
 
         public bool IsFilePathValid(string filePath)
         {
-            return !string.IsNullOrEmpty(filePath) && File.Exists(filePath);
+            return !string.IsNullOrEmpty(filePath) && Directory.Exists(filePath);
         }
 
         public string GetNewFilePath(string oldPath)
