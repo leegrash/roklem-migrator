@@ -29,6 +29,7 @@ namespace Roklem_Migrator.Services
             {
                 Console.WriteLine(file);
             }
+            Console.WriteLine();
         }
 
         public List<string> getFileTypes(List<string> files)
