@@ -47,7 +47,6 @@ namespace Roklem_Migrator.Services
             {
                 throw new Exception("Could not generate new Path");
             }
-
         }
     }
 }
