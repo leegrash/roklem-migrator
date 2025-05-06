@@ -1,5 +1,4 @@
 ﻿using Roklem_Migrator.Services.Interfaces;
-using System.Linq;
 
 namespace Roklem_Migrator.Services
 {
@@ -29,6 +28,10 @@ namespace Roklem_Migrator.Services
                 Console.WriteLine("\nFile types:");
                 _FileLocatorService.printFileList(fileTypes);
 
+                // invoke request with files to find which files might include package dependencies
+
+                // define target version
+
                 var cts = new CancellationTokenSource();
                 var spinnerTask = Task.Run(() => _SpinnerService.ShowSpinner(cts.Token, "Analyzing project files."));
 
@@ -51,6 +54,10 @@ namespace Roklem_Migrator.Services
 
                 Console.WriteLine("\nFiles that need to be migrated:");
                 _FileLocatorService.printFileList(filesToMigrate);
+
+                // copy copyable files
+
+                // migrate files to target version
 
                 return true;
             }
