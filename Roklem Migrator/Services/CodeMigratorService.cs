@@ -24,7 +24,14 @@ namespace Roklem_Migrator.Services
 
                 var (filesToMigrate, filesToCopy) = _FileHandlerService.distinguisFiles(files);
 
-                // copy copyable files
+                try
+                {
+                    _FileHandlerService.copyFiles(filesToCopy, srcDir, targetDir);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Error copying files: {e.Message}");
+                }
 
                 // invoke request with files to find which files might include package dependencies
 

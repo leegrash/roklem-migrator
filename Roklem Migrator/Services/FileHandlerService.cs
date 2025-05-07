@@ -20,9 +20,22 @@ namespace Roklem_Migrator.Services
             _SpinnerService = spinnerService;
         }
 
-        public void copyFiles(List<string> filesToCopy, string targetPath)
+        public void copyFiles(List<string> filesToCopy, string srcPath, string targetPath)
         {
-            
+            foreach (string filePath in filesToCopy)
+            {
+                string sourcePath = Path.Combine(srcPath, filePath);
+                string destinationPath = Path.Combine(targetPath, filePath);
+
+                string? destinationDirectory = Path.GetDirectoryName(destinationPath);
+                if (!string.IsNullOrEmpty(destinationDirectory) && !Directory.Exists(destinationDirectory))
+                {
+                    Directory.CreateDirectory(destinationDirectory);
+                }
+
+                Console.WriteLine($"Copying file: {filePath} to {targetPath}");
+                File.Copy(sourcePath, destinationPath, overwrite: true);
+            }
         }
 
         public (List<string> filesToMigrate, List<string> filesToCopy) distinguisFiles(List<string> files)
