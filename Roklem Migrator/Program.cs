@@ -33,20 +33,20 @@ class Program
         var filePathHandler = serviceProvider.GetRequiredService<IFilePathHandlerService>();
         var codeMigrator = serviceProvider.GetRequiredService<ICodeMigratorService>();
 
-        string filePath = filePathHandler.GetFilePath(args);
+        (string srcDir, string targetDir) = filePathHandler.GetSrcAndTargetDirFromArg(args);
 
         try
         {
-            if (filePathHandler.IsFilePathValid(filePath))
+            if (filePathHandler.IsPathValid(srcDir))
             {
-                codeMigrator.Migrate(filePath);
+                codeMigrator.Migrate(srcDir, targetDir);
 
                 Console.WriteLine("Done");
             }
         }
         catch (FileNotFoundException)
         {
-            Console.Error.WriteLine($"File not found at path: {filePath}");
+            Console.Error.WriteLine($"File not found at path: {srcDir}");
         }
         catch (Exception e)
         {

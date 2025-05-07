@@ -14,11 +14,11 @@ namespace Roklem_Migrator.Services
             _FileHandlerService = fileHandlerService;
         }
 
-        public bool Migrate(string filePath)
+        public bool Migrate(string srcDir, string targetDir)
         {
             try
             {
-                List<string> files = _FileLocatorService.locateFiles(filePath);
+                List<string> files = _FileLocatorService.locateFiles(srcDir);
 
                 Console.WriteLine($"Located {files.Count} files");
 

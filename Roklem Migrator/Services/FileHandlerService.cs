@@ -19,6 +19,12 @@ namespace Roklem_Migrator.Services
             _FileLocatorService = fileLocatorService;
             _SpinnerService = spinnerService;
         }
+
+        public void copyFiles(List<string> filesToCopy, string targetPath)
+        {
+            
+        }
+
         public (List<string> filesToMigrate, List<string> filesToCopy) distinguisFiles(List<string> files)
         {
             List<string> fileTypes = _FileLocatorService.getFileTypes(files);

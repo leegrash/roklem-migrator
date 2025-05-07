@@ -2,8 +2,8 @@
 {
     internal interface IFilePathHandlerService
     {
-        string GetFilePath(string[] args);
-        bool IsFilePathValid(string filePath);
+        (string srcDir, string targetDir) GetSrcAndTargetDirFromArg(string[] args);
+        bool IsPathValid(string filePath);
         string GetNewFilePath(string oldFilePath);
     }
 }
