@@ -4,6 +4,5 @@
     {
         List<string> getFileTypes(List<string> files);
         List<string> locateFiles(string rootPath);
-        void printFileList(List<string> files);
     }
 }

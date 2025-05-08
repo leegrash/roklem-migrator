@@ -7,12 +7,14 @@ namespace Roklem_Migrator.Services
         private readonly IInvokeAzureAIRequestResponseService _InvokeAzureAIRequestResponseService;
         private readonly IFileLocatorService _FileLocatorService;
         private readonly ISpinnerService _SpinnerService;
+        private readonly ICommonService _CommonService;
 
-        public FileHandlerService(IInvokeAzureAIRequestResponseService invokeAzureAIRequestResponseService, IFileLocatorService fileLocatorService, ISpinnerService spinnerService)
+        public FileHandlerService(IInvokeAzureAIRequestResponseService invokeAzureAIRequestResponseService, IFileLocatorService fileLocatorService, ISpinnerService spinnerService, ICommonService commonService)
         {
             _InvokeAzureAIRequestResponseService = invokeAzureAIRequestResponseService;
             _FileLocatorService = fileLocatorService;
             _SpinnerService = spinnerService;
+            _CommonService = commonService;
         }
 
         public void copyFiles(List<string> filesToCopy, string srcPath, string targetPath)
@@ -38,10 +40,10 @@ namespace Roklem_Migrator.Services
             List<string> fileTypes = _FileLocatorService.getFileTypes(files);
 
             Console.WriteLine("\nFile types:");
-            _FileLocatorService.printFileList(fileTypes);
+            _CommonService.printList(fileTypes);
 
             var cts = new CancellationTokenSource();
-            var spinnerTask = Task.Run(() => _SpinnerService.ShowSpinner(cts.Token, "Analyzing project files."));
+            var spinnerTask = Task.Run(() => _SpinnerService.ShowSpinner(cts.Token, "Analyzing project files.", "Project files analyzed."));
 
             List<string> fileTypesToMigrate = _InvokeAzureAIRequestResponseService
                 .InvokeRequestResponse(
@@ -56,7 +58,7 @@ namespace Roklem_Migrator.Services
             spinnerTask.Wait();
 
             Console.WriteLine("\nFile types that need editing:");
-            _FileLocatorService.printFileList(fileTypesToMigrate);
+            _CommonService.printList(fileTypesToMigrate);
 
             List<string> fileTypesToCopy = fileTypes
             .Select(ft => ft.Trim().ToLowerInvariant())
@@ -64,7 +66,7 @@ namespace Roklem_Migrator.Services
             .ToList();
 
             Console.WriteLine("\nFile types that can be copied:");
-            _FileLocatorService.printFileList(fileTypesToCopy);
+            _CommonService.printList(fileTypesToCopy);
 
             List<string> filesToCopy = files
                 .Where(file => fileTypesToCopy.Any(type => file.EndsWith(type, StringComparison.OrdinalIgnoreCase)))
@@ -75,12 +77,17 @@ namespace Roklem_Migrator.Services
                 .ToList();
 
             Console.WriteLine("\nFiles that need to be migrated:");
-            _FileLocatorService.printFileList(filesToMigrate);
+            _CommonService.printList(filesToMigrate);
 
             Console.WriteLine("\nFiles that can be copied:");
-            _FileLocatorService.printFileList(filesToCopy);
+            _CommonService.printList(filesToCopy);
 
             return (filesToMigrate, filesToCopy);
+        }
+
+        public List<string> getFileNames(List<string> files)
+        {
+            return files.Select(file => Path.GetFileName(file)).ToList();
         }
     }
 }

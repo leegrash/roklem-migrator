@@ -4,7 +4,7 @@ namespace Roklem_Migrator.Services
 {
     internal class SpinnerService : ISpinnerService
     {
-        public void ShowSpinner(CancellationToken cancellationToken, string spinnerMessage)
+        public void ShowSpinner(CancellationToken cancellationToken, string spinnerMessage, string completeMessage)
         {
             var spinner = new[] { '|', '/', '-', '\\' };
             int counter = 0;
@@ -15,7 +15,7 @@ namespace Roklem_Migrator.Services
                 Thread.Sleep(100);
             }
 
-            Console.Write("\rDone!                                                           \n");
+            Console.Write($"\r{completeMessage}                                                                       \n");
         }
     }
 }

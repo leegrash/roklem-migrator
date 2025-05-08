@@ -22,15 +22,6 @@ namespace Roklem_Migrator.Services
             return files;
         }
 
-        public void printFileList(List<string> files)
-        {
-            foreach (var file in files)
-            {
-                Console.WriteLine(file);
-            }
-            Console.WriteLine();
-        }
-
         public List<string> getFileTypes(List<string> files)
         {
             List<string> fileTypes = new List<string>();

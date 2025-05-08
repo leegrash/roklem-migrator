@@ -6,11 +6,13 @@ namespace Roklem_Migrator.Services
     {
         private readonly IFileLocatorService _FileLocatorService;
         private readonly IFileHandlerService _FileHandlerService;
+        private readonly IDependencyHandlerService _DependencyHandlerService;
 
-        public CodeMigratorService(IFileLocatorService fileLocatorService, IFileHandlerService fileHandlerService)
+        public CodeMigratorService(IFileLocatorService fileLocatorService, IFileHandlerService fileHandlerService, IDependencyHandlerService dependencyHandlerService)
         {
             _FileLocatorService = fileLocatorService;
             _FileHandlerService = fileHandlerService;
+            _DependencyHandlerService = dependencyHandlerService;
         }
 
         public bool Migrate(string srcDir, string targetDir)
@@ -32,7 +34,7 @@ namespace Roklem_Migrator.Services
                     Console.WriteLine($"Error copying files: {e.Message}");
                 }
 
-                // invoke request with files to find which files might include package dependencies
+                List<string> packageDependencies = _DependencyHandlerService.getPackageDependencies(filesToMigrate, srcDir);
 
                 // define target version
 
