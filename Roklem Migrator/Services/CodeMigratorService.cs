@@ -7,12 +7,14 @@ namespace Roklem_Migrator.Services
         private readonly IFileLocatorService _FileLocatorService;
         private readonly IFileHandlerService _FileHandlerService;
         private readonly IDependencyHandlerService _DependencyHandlerService;
+        private readonly INuGetAPIService _NuGetAPIService;
 
-        public CodeMigratorService(IFileLocatorService fileLocatorService, IFileHandlerService fileHandlerService, IDependencyHandlerService dependencyHandlerService)
+        public CodeMigratorService(IFileLocatorService fileLocatorService, IFileHandlerService fileHandlerService, IDependencyHandlerService dependencyHandlerService, INuGetAPIService nuGetAPIService)
         {
             _FileLocatorService = fileLocatorService;
             _FileHandlerService = fileHandlerService;
             _DependencyHandlerService = dependencyHandlerService;
+            _NuGetAPIService = nuGetAPIService;
         }
 
         public bool Migrate(string srcDir, string targetDir)
@@ -36,7 +38,7 @@ namespace Roklem_Migrator.Services
 
                 List<string> packageDependencies = _DependencyHandlerService.getPackageDependencies(filesToMigrate, srcDir);
 
-                // define target version
+                string targetVersion = _NuGetAPIService.getOptimalTargetVersion(packageDependencies);
 
                 // migrate files to target version
 
