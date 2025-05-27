@@ -7,7 +7,7 @@ namespace Roklem_Migrator.Services
 {
     internal class InvokeAzureAIRequestResponseService : IInvokeAzureAIRequestResponseService
     {
-        public async Task<string> InvokeRequestResponse(string prompt, List<string> data)
+        public async Task<string> InvokeRequestResponse(string prompt, List<string> data, float temperature)
         {
             var endpoint = Environment.GetEnvironmentVariable("AzureEndpoint");
             if (string.IsNullOrEmpty(endpoint))
@@ -35,9 +35,14 @@ namespace Roklem_Migrator.Services
                     new UserChatMessage(string.Join(Environment.NewLine, data))
                 };
 
+            var chatOptions = new ChatCompletionOptions
+            {
+                Temperature = temperature
+            };
+
             try
             {
-                var completion = await chatClient.CompleteChatAsync(messages);
+                var completion = await chatClient.CompleteChatAsync(messages, chatOptions);
 
                 if (completion != null)
                 {
