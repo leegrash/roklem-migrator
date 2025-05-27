@@ -27,8 +27,8 @@ namespace Roklem_Migrator.Services
             List<string> dependencyFiles = _InvokeAzureAIRequestResponseService
                 .InvokeRequestResponse(
                     "Here are some of the files in a VB .Net Framework project. Which of these does likely include dependencies to external packages? Give the file as a list with each file on a new line. Respond with no other text or characters.\r\nFile types:",
-                    files,
-                    0)
+                    0,
+                    files)
                 .Result
                 .Trim()
                 .Split("\n")

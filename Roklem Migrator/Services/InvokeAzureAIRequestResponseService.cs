@@ -7,7 +7,7 @@ namespace Roklem_Migrator.Services
 {
     internal class InvokeAzureAIRequestResponseService : IInvokeAzureAIRequestResponseService
     {
-        public async Task<string> InvokeRequestResponse(string prompt, List<string> data, float temperature)
+        public async Task<string> InvokeRequestResponse(string prompt, float temperature, List<string>? data = null)
         {
             var endpoint = Environment.GetEnvironmentVariable("AzureEndpoint");
             if (string.IsNullOrEmpty(endpoint))
@@ -30,10 +30,14 @@ namespace Roklem_Migrator.Services
             ChatClient chatClient = azureClient.GetChatClient("gpt-4o-mini");
 
             var messages = new List<ChatMessage>
-                {
-                    new SystemChatMessage(prompt),
-                    new UserChatMessage(string.Join(Environment.NewLine, data))
-                };
+            {
+                new SystemChatMessage(prompt)
+            };
+
+            if (data != null && data.Count > 0)
+            {
+                messages.Add(new UserChatMessage(string.Join(Environment.NewLine, data)));
+            }
 
             var chatOptions = new ChatCompletionOptions
             {

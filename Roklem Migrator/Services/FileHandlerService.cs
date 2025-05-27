@@ -48,8 +48,8 @@ namespace Roklem_Migrator.Services
             List<string> fileTypesToMigrate = _InvokeAzureAIRequestResponseService
                 .InvokeRequestResponse(
                     "Here are the file types in a VB .Net Framework project. Which will need editing in the migration? Give the file types as a list with each type on a new line. Respond with no other text or characters.\r\nFile types:",
-                    fileTypes,
-                    0)
+                    0,
+                    fileTypes)
                 .Result
                 .Trim()
                 .Split("\n")

@@ -2,6 +2,6 @@
 {
     internal interface IInvokeAzureAIRequestResponseService
     {
-        Task<string> InvokeRequestResponse(string prompt, List<string> data, float temperature);
+        public Task<string> InvokeRequestResponse(string prompt, float temperature, List<string>? data = null);
     }
 }
