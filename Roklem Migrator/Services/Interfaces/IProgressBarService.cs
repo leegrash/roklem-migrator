@@ -9,5 +9,6 @@ namespace Roklem_Migrator.Services.Interfaces
     internal interface IProgressBarService
     {
         public void DisplayProgress(int currentStep, int totalSteps);
+        public void stopProgressBar(string message);
     }
 }

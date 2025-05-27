@@ -39,6 +39,8 @@ namespace Roklem_Migrator.Services
                 }
             }
 
+            _progressBarService.stopProgressBar("Supported versions fetched successfully.");
+
             return result;
         }
 

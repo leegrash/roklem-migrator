@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Roklem_Migrator.Services
 {
-    internal class ProgressBarService: IProgressBarService
+    internal class ProgressBarService : IProgressBarService
     {
         private const int _barWidth = 20;
         private const char _progressChar = '█';
@@ -22,6 +22,11 @@ namespace Roklem_Migrator.Services
             progressBar.Append($"] {progressRatio * 100:F1}%");
 
             Console.Write($"\r{progressBar}");
+        }
+
+        public void stopProgressBar(string message)
+        {
+            Console.WriteLine($"\n{message}\n");
         }
     }
 }
