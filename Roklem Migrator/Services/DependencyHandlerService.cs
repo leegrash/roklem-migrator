@@ -22,7 +22,7 @@ namespace Roklem_Migrator.Services
         public List<string> getPackageDependencies(List<string> files, string srcPath)
         {
             var cts = new CancellationTokenSource();
-            var spinnerTask = Task.Run(() => _SpinnerService.ShowSpinner(cts.Token, "Finding files with likely dependencies:", "Files with likely dependencies found."));
+            var spinnerTask = Task.Run(() => _SpinnerService.ShowSpinner(cts.Token, "Finding files with likely dependencies:", "Files with likely dependencies found:"));
 
             List<string> dependencyFiles = _InvokeAzureAIRequestResponseService
                 .InvokeRequestResponse(
@@ -36,6 +36,8 @@ namespace Roklem_Migrator.Services
 
             cts.Cancel();
             spinnerTask.Wait();
+
+            _CommonService.printList(dependencyFiles);
 
             var guaranteedFiles = files.Where(f =>
                 Path.GetFileName(f).Equals("packages.config", StringComparison.OrdinalIgnoreCase) ||
@@ -53,7 +55,7 @@ namespace Roklem_Migrator.Services
             List<string> projectDependencies = new List<string>();
 
             cts = new CancellationTokenSource();
-            spinnerTask = Task.Run(() => _SpinnerService.ShowSpinner(cts.Token, "Finding project dependencies.", "Project dependencies found."));
+            spinnerTask = Task.Run(() => _SpinnerService.ShowSpinner(cts.Token, "Finding project dependencies.", "Project dependencies found:"));
 
             foreach (string filePath in dependencyFiles)
             {
@@ -71,7 +73,6 @@ namespace Roklem_Migrator.Services
             cts.Cancel();
             spinnerTask.Wait();
 
-            Console.WriteLine("Project dependencies found:");
             _CommonService.printList(projectDependencies);
 
             return projectDependencies;
