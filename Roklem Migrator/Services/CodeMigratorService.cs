@@ -1,5 +1,4 @@
 ﻿using Roklem_Migrator.Services.Interfaces;
-using System.Collections.Generic;
 
 namespace Roklem_Migrator.Services
 {
@@ -9,13 +8,15 @@ namespace Roklem_Migrator.Services
         private readonly IFileHandlerService _FileHandlerService;
         private readonly IDependencyHandlerService _DependencyHandlerService;
         private readonly INuGetAPIService _NuGetAPIService;
+        private readonly ITargetVersionService _TargetVersionService;
 
-        public CodeMigratorService(IFileLocatorService fileLocatorService, IFileHandlerService fileHandlerService, IDependencyHandlerService dependencyHandlerService, INuGetAPIService nuGetAPIService)
+        public CodeMigratorService(IFileLocatorService fileLocatorService, IFileHandlerService fileHandlerService, IDependencyHandlerService dependencyHandlerService, INuGetAPIService nuGetAPIService, ITargetVersionService targetVersionService)
         {
             _FileLocatorService = fileLocatorService;
             _FileHandlerService = fileHandlerService;
             _DependencyHandlerService = dependencyHandlerService;
             _NuGetAPIService = nuGetAPIService;
+            _TargetVersionService = targetVersionService;
         }
 
         public bool Migrate(string srcDir, string targetDir)
@@ -41,7 +42,7 @@ namespace Roklem_Migrator.Services
 
                 Dictionary < string, List<string> > supportedVersions = _NuGetAPIService.GetSupportedVersionsAsync(packageDependencies).GetAwaiter().GetResult();
 
-                // migrate files to target version
+                TargetVersionResponse targetVersionResponse = _TargetVersionService.GetTargetVersion(supportedVersions).Result;
 
                 return true;
             }
