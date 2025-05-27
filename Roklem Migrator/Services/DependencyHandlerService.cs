@@ -1,4 +1,5 @@
 ﻿using Roklem_Migrator.Services.Interfaces;
+using System.Xml.Linq;
 
 namespace Roklem_Migrator.Services
 {
@@ -18,13 +19,14 @@ namespace Roklem_Migrator.Services
             _CommonService = commonService;
         }
 
-        public List<string> getPackageDependencies(List<string> files, string srcPath) {
+        public List<string> getPackageDependencies(List<string> files, string srcPath)
+        {
             var cts = new CancellationTokenSource();
-            var spinnerTask = Task.Run(() => _SpinnerService.ShowSpinner(cts.Token, "Finding files with likely dependencies:", "Files with likely dependecies found."));
+            var spinnerTask = Task.Run(() => _SpinnerService.ShowSpinner(cts.Token, "Finding files with likely dependencies:", "Files with likely dependencies found."));
 
             List<string> dependencyFiles = _InvokeAzureAIRequestResponseService
                 .InvokeRequestResponse(
-                    "Here are some of the files in a VB .Net Framework project. Which of these does likely include dependecies to external packages? Give the file as a list with each file on a new line. Respond with no other text or characters.\r\nFile types:",
+                    "Here are some of the files in a VB .Net Framework project. Which of these does likely include dependencies to external packages? Give the file as a list with each file on a new line. Respond with no other text or characters.\r\nFile types:",
                     files)
                 .Result
                 .Trim()
@@ -35,35 +37,35 @@ namespace Roklem_Migrator.Services
             cts.Cancel();
             spinnerTask.Wait();
 
+            var guaranteedFiles = files.Where(f =>
+                Path.GetFileName(f).Equals("packages.config", StringComparison.OrdinalIgnoreCase) ||
+                f.EndsWith(".vbproj", StringComparison.OrdinalIgnoreCase) ||
+                Path.GetFileName(f).Equals("web.config", StringComparison.OrdinalIgnoreCase) ||
+                Path.GetFileName(f).Equals("app.config", StringComparison.OrdinalIgnoreCase)
+            ).ToList();
+
+            foreach (var guaranteedFile in guaranteedFiles)
+            {
+                if (!dependencyFiles.Contains(guaranteedFile, StringComparer.OrdinalIgnoreCase))
+                    dependencyFiles.Add(guaranteedFile);
+            }
+
             List<string> projectDependencies = new List<string>();
 
             cts = new CancellationTokenSource();
             spinnerTask = Task.Run(() => _SpinnerService.ShowSpinner(cts.Token, "Finding project dependencies.", "Project dependencies found."));
 
-            foreach (string filePath in dependencyFiles) {
+            foreach (string filePath in dependencyFiles)
+            {
                 string sourcePath = Path.Combine(srcPath, filePath).Trim();
-                string fileName = Path.GetFileName(sourcePath);
 
-                IEnumerable<string> fileLines = _FileReaderService.ReadFile(sourcePath);                
+                List<string> fileDependencies = ExtractDependenciesFromFile(sourcePath);
 
-                List<string> fileDependencies = _InvokeAzureAIRequestResponseService
-                    .InvokeRequestResponse(
-                        $"Here are are the lines of code in a VB .Net Framework file named {fileName}. Which package dependencies does the file have? Give the dependecy package names as a list, each package name on a new line. If no dependency is found, respond with No dependency found Respond with no other text or characters.\r\nLines:",
-                        fileLines.ToList())
-                    .Result
-                    .Trim()
-                    .Split("\n")
-                    .Select(dep => dep.Trim())
-                    .ToList();
-
-                if (fileDependencies[0] != "No dependency found")
-                {
-                    projectDependencies.AddRange(
-                        fileDependencies
-                            .Where(dep => !projectDependencies.Contains(dep.Trim()))
-                            .Select(dep => dep.Trim())
-                    );
-                }
+                projectDependencies.AddRange(
+                    fileDependencies
+                        .Where(dep => !projectDependencies.Contains(dep.Trim()))
+                        .Select(dep => dep.Trim())
+                );
             }
 
             cts.Cancel();
@@ -73,6 +75,53 @@ namespace Roklem_Migrator.Services
             _CommonService.printList(projectDependencies);
 
             return projectDependencies;
+        }
+
+        private List<string> ExtractDependenciesFromFile(string filePath)
+        {
+            var dependencies = new List<string>();
+            string fileName = Path.GetFileName(filePath);
+
+            try
+            {
+                if (fileName.Equals("packages.config", StringComparison.OrdinalIgnoreCase))
+                {
+                    var doc = XDocument.Load(filePath);
+                    dependencies.AddRange(
+                        doc.Descendants("package")
+                           .Select(p => p.Attribute("id")?.Value)
+                           .Where(id => !string.IsNullOrWhiteSpace(id))!
+                    );
+                }
+                else if (fileName.EndsWith(".vbproj", StringComparison.OrdinalIgnoreCase))
+                {
+                    var doc = XDocument.Load(filePath);
+                    dependencies.AddRange(
+                        doc.Descendants("Reference")
+                           .Select(r => r.Attribute("Include")?.Value?.Split(',')[0])
+                           .Where(name => !string.IsNullOrWhiteSpace(name))!
+                           .Select(name => name!)
+                    );
+                }
+                else if (fileName.Equals("web.config", StringComparison.OrdinalIgnoreCase) ||
+                         fileName.Equals("app.config", StringComparison.OrdinalIgnoreCase))
+                {
+                    var doc = XDocument.Load(filePath);
+                    XNamespace ns = "urn:schemas-microsoft-com:asm.v1";
+                    dependencies.AddRange(
+                        doc.Descendants(ns + "assemblyIdentity")
+                           .Select(ai => ai.Attribute("name")?.Value)
+                           .Where(name => !string.IsNullOrWhiteSpace(name))!
+                           .Select(name => name!)
+                    );
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to parse dependencies from {fileName}: {ex.Message}");
+            }
+
+            return dependencies.Distinct().ToList();
         }
     }
 }
