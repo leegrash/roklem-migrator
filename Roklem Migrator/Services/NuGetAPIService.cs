@@ -7,18 +7,27 @@ namespace Roklem_Migrator.Services
     internal class NuGetAPIService : INuGetAPIService
     {
         private readonly HttpClient _httpClient;
+        private readonly IProgressBarService _progressBarService;
 
-        public NuGetAPIService()
+        public NuGetAPIService(IProgressBarService progressBarService)
         {
             _httpClient = new HttpClient();
+            _progressBarService = progressBarService;
         }
 
         public async Task<Dictionary<string, List<string>>> GetSupportedVersionsAsync(List<string> packageDependencies)
         {
             var result = new Dictionary<string, List<string>>();
 
+            int totalPackages = packageDependencies.Count;
+            int currentStep = 0;
+            Console.WriteLine($"Fetching supported versions for dependencies...");
+
             foreach (var package in packageDependencies)
             {
+                currentStep++;
+                _progressBarService.DisplayProgress(currentStep, totalPackages);
+
                 try
                 {
                     var supportedFrameworks = await GetSupportedFrameworksForPackageAsync(package);
@@ -26,7 +35,6 @@ namespace Roklem_Migrator.Services
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Failed to fetch for {package} thorugh NuGet API: {ex.Message}");
                     result[package] = new List<string>();
                 }
             }
