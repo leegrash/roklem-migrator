@@ -1,51 +1,87 @@
 ﻿using Roklem_Migrator.Services.Interfaces;
 using System.IO.Compression;
+using System.Text.Json.Nodes;
 
 namespace Roklem_Migrator.Services
 {
     internal class NuGetAPIService : INuGetAPIService
     {
+        private readonly HttpClient _httpClient;
+
         public NuGetAPIService()
         {
-            // Initialize the NuGet API client here if needed
+            _httpClient = new HttpClient();
         }
 
-        public string getOptimalTargetVersion(List<string> packageDependencies)
+        public async Task<Dictionary<string, List<string>>> GetSupportedVersionsAsync(List<string> packageDependencies)
         {
+            var result = new Dictionary<string, List<string>>();
+
             foreach (var package in packageDependencies)
             {
-                var latestVersion = getPackageVersionsAsync(package).Result;
+                try
+                {
+                    var supportedFrameworks = await GetSupportedFrameworksForPackageAsync(package);
+                    result[package] = supportedFrameworks;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Failed to fetch for {package} thorugh NuGet API: {ex.Message}");
+                    result[package] = new List<string>();
+                }
             }
-            return "1.0.0";
+
+            return result;
         }
 
-        private async Task<List<string>> getPackageVersionsAsync(string packageName)
+        private async Task<List<string>> GetSupportedFrameworksForPackageAsync(string packageName)
         {
-            string packageInfo = await getPackageInfoAsync(packageName);
+            string lowerName = packageName.ToLowerInvariant();
+            string indexUrl = $"https://api.nuget.org/v3/registration5-gz-semver2/{lowerName}/index.json";
 
-            return new List<string> { "1.0.0", "2.0.0", "3.0.0" };
-        }
+            var indexResponse = await _httpClient.GetAsync(indexUrl);
+            indexResponse.EnsureSuccessStatusCode();
 
-        private async Task<string> getPackageInfoAsync(string packageName)
-        {
-            using HttpClient client = new HttpClient();
+            using var stream = await indexResponse.Content.ReadAsStreamAsync();
+            Stream contentStream = stream;
 
-            string url = $"https://api.nuget.org/v3/registration5-gz-semver2/{packageName.ToLower()}/index.json";
-            
-            HttpResponseMessage response = await client.GetAsync(url);
-            if (response.IsSuccessStatusCode)
+            if (indexResponse.Content.Headers.ContentEncoding.Contains("gzip"))
             {
-                using Stream responseStream = await response.Content.ReadAsStreamAsync();
-                using GZipStream decompressedStream = new GZipStream(responseStream, CompressionMode.Decompress);
-                using StreamReader reader = new StreamReader(decompressedStream);
-                string jsonResponse = await reader.ReadToEndAsync();
-                return jsonResponse;
+                contentStream = new GZipStream(stream, CompressionMode.Decompress);
             }
-            else
+
+            using var reader = new StreamReader(contentStream);
+            string json = await reader.ReadToEndAsync();
+
+            var frameworks = new HashSet<string>();
+            var root = JsonNode.Parse(json);
+            var items = root?["items"]?.AsArray();
+            if (items != null)
             {
-                Console.WriteLine($"Error: {response.StatusCode}");
-                throw new Exception($"Error fetching package info: {response.StatusCode}");
+                foreach (var page in items)
+                {
+                    var pageItems = page?["items"]?.AsArray();
+                    if (pageItems != null)
+                    {
+                        foreach (var pkg in pageItems)
+                        {
+                            var catalogEntry = pkg?["catalogEntry"];
+                            var dependencyGroups = catalogEntry?["dependencyGroups"]?.AsArray();
+                            if (dependencyGroups != null)
+                            {
+                                foreach (var group in dependencyGroups)
+                                {
+                                    var tfm = group?["targetFramework"]?.ToString();
+                                    if (!string.IsNullOrEmpty(tfm))
+                                        frameworks.Add(tfm);
+                                }
+                            }
+                        }
+                    }
+                }
             }
+
+            return frameworks.ToList();
         }
     }
 }

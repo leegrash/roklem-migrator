@@ -1,4 +1,5 @@
 ﻿using Roklem_Migrator.Services.Interfaces;
+using System.Collections.Generic;
 
 namespace Roklem_Migrator.Services
 {
@@ -38,7 +39,7 @@ namespace Roklem_Migrator.Services
 
                 List<string> packageDependencies = _DependencyHandlerService.getPackageDependencies(filesToMigrate, srcDir);
 
-                string targetVersion = _NuGetAPIService.getOptimalTargetVersion(packageDependencies);
+                Dictionary < string, List<string> > supportedVersions = _NuGetAPIService.GetSupportedVersionsAsync(packageDependencies).GetAwaiter().GetResult();
 
                 // migrate files to target version
 
