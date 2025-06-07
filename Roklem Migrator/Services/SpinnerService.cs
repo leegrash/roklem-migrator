@@ -12,7 +12,7 @@ namespace Roklem_Migrator.Services
             StopSpinner();
 
             _cts = new CancellationTokenSource();
-            _spinnerTask = Task.Run(() => ShowSpinner(_cts.Token, spinnerMessage, completeMessage));
+            _spinnerTask = Task.Run(() => Spinner(_cts.Token, spinnerMessage, completeMessage));
         }
 
         public void StopSpinner()
@@ -27,7 +27,7 @@ namespace Roklem_Migrator.Services
             }
         }
 
-        private void ShowSpinner(CancellationToken cancellationToken, string spinnerMessage, string completeMessage)
+        private void Spinner(CancellationToken cancellationToken, string spinnerMessage, string completeMessage)
         {
             var spinner = new[] { '|', '/', '-', '\\' };
             int counter = 0;
