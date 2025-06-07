@@ -42,8 +42,7 @@ namespace Roklem_Migrator.Services
             Console.WriteLine("\nFile types:");
             _CommonService.printList(fileTypes);
 
-            var cts = new CancellationTokenSource();
-            var spinnerTask = Task.Run(() => _SpinnerService.ShowSpinner(cts.Token, "Analyzing project files.", "Project files analyzed."));
+            _SpinnerService.StartSpinner("Analyzing project files.", "Project files analyzed.");
 
             List<string> fileTypesToMigrate = _InvokeAzureAIRequestResponseService
                 .InvokeRequestResponse(
@@ -55,8 +54,7 @@ namespace Roklem_Migrator.Services
                 .Split("\n")
                 .ToList();
 
-            cts.Cancel();
-            spinnerTask.Wait();
+            _SpinnerService.StopSpinner();
 
             Console.WriteLine("\nFile types that need editing:");
             _CommonService.printList(fileTypesToMigrate);

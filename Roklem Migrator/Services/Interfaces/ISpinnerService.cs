@@ -2,6 +2,7 @@
 {
     internal interface ISpinnerService
     {
-        void ShowSpinner(CancellationToken cancellationToken, string spinnerMessage, string completeMessage);
+        public void StartSpinner(string spinnerMessage, string completeMessage);
+        public void StopSpinner();
     }
 }

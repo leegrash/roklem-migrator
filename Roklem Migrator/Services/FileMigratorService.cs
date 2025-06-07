@@ -1,10 +1,16 @@
 ﻿using Roklem_Migrator.Services.Interfaces;
-using System.Xml.Serialization;
 
 namespace Roklem_Migrator.Services
 {
     internal class FileMigratorService : IFileMigratorService
     {
+        private readonly IProgressBarService _ProgressBarService;
+
+        public FileMigratorService(IProgressBarService progressBarService)
+        {
+            _ProgressBarService = progressBarService;
+        }
+
         public void MigrateFiles(List<string> files, string srcDir, string targetDir, TargetVersionResponse targetVersionResponse)
         {
             foreach (var file in files)

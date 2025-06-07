@@ -32,15 +32,11 @@ namespace Roklem_Migrator.Services
         {
             string prompt = GenerateTargetVersionPrompt(supportedVersions);
 
-            var cts = new CancellationTokenSource();
-            var spinnerTask = Task.Run(() => _SpinnerService.ShowSpinner(cts.Token, "Determining target .net version", "Target .net version determined"));
-
+            _SpinnerService.StartSpinner("Determining target .net version", "Target .net version determined");
+            
             try
             {
                 var  response = await _InvokeAzureAIRequestResponseService.InvokeRequestResponse(prompt, 0);
-
-                cts.Cancel();
-                spinnerTask.Wait();
 
                 var nonMigratablePackages = Regex.Match(response, @"#([\s\S]*?)#")
                                                  .Groups[1].Value
@@ -57,11 +53,13 @@ namespace Roklem_Migrator.Services
 
                 var targetVersion = Regex.Match(response, @"Version:\s*(\d+\.\d+)").Groups[1].Value;
 
+                _SpinnerService.StopSpinner();
+
                 return new TargetVersionResponse(nonMigratablePackages, proposedDependencySolution, targetVersion);
             }
             catch (Exception e)
             {
-                cts.Cancel();
+                _SpinnerService.StopSpinner();
                 Console.WriteLine($"Error determining target .net version: {e.Message}");
                 throw new Exception("Error determining target .net version", e);
             }

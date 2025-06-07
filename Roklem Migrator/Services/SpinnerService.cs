@@ -4,7 +4,30 @@ namespace Roklem_Migrator.Services
 {
     internal class SpinnerService : ISpinnerService
     {
-        public void ShowSpinner(CancellationToken cancellationToken, string spinnerMessage, string completeMessage)
+        private CancellationTokenSource? _cts;
+        private Task? _spinnerTask;
+
+        public void StartSpinner(string spinnerMessage, string completeMessage)
+        {
+            StopSpinner();
+
+            _cts = new CancellationTokenSource();
+            _spinnerTask = Task.Run(() => ShowSpinner(_cts.Token, spinnerMessage, completeMessage));
+        }
+
+        public void StopSpinner()
+        {
+            if (_cts != null)
+            {
+                _cts.Cancel();
+                _spinnerTask?.Wait();
+                _cts.Dispose();
+                _cts = null;
+                _spinnerTask = null;
+            }
+        }
+
+        private void ShowSpinner(CancellationToken cancellationToken, string spinnerMessage, string completeMessage)
         {
             var spinner = new[] { '|', '/', '-', '\\' };
             int counter = 0;
