@@ -9,14 +9,16 @@ namespace Roklem_Migrator.Services
         private readonly IDependencyHandlerService _DependencyHandlerService;
         private readonly INuGetAPIService _NuGetAPIService;
         private readonly ITargetVersionService _TargetVersionService;
+        private readonly IFileMigratorService _FileMigratorService;
 
-        public CodeMigratorService(IFileLocatorService fileLocatorService, IFileHandlerService fileHandlerService, IDependencyHandlerService dependencyHandlerService, INuGetAPIService nuGetAPIService, ITargetVersionService targetVersionService)
+        public CodeMigratorService(IFileLocatorService fileLocatorService, IFileHandlerService fileHandlerService, IDependencyHandlerService dependencyHandlerService, INuGetAPIService nuGetAPIService, ITargetVersionService targetVersionService, IFileMigratorService fileMigratorService)
         {
             _FileLocatorService = fileLocatorService;
             _FileHandlerService = fileHandlerService;
             _DependencyHandlerService = dependencyHandlerService;
             _NuGetAPIService = nuGetAPIService;
             _TargetVersionService = targetVersionService;
+            _FileMigratorService = fileMigratorService;
         }
 
         public bool Migrate(string srcDir, string targetDir)
@@ -43,6 +45,8 @@ namespace Roklem_Migrator.Services
                 Dictionary < string, List<string> > supportedVersions = _NuGetAPIService.GetSupportedVersionsAsync(packageDependencies).GetAwaiter().GetResult();
 
                 TargetVersionResponse targetVersionResponse = _TargetVersionService.GetTargetVersion(supportedVersions).Result;
+
+                _FileMigratorService.MigrateFiles(filesToMigrate, srcDir, targetDir, targetVersionResponse);
 
                 return true;
             }
