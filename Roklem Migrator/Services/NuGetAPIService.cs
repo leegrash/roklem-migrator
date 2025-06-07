@@ -33,7 +33,7 @@ namespace Roklem_Migrator.Services
                     var supportedFrameworks = await GetSupportedFrameworksForPackageAsync(package);
                     result[package] = supportedFrameworks;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     result[package] = new List<string>();
                 }
