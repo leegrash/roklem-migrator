@@ -4,9 +4,10 @@ namespace Roklem_Migrator.Services
 {
     internal class FileLocatorService: IFileLocatorService
     {
-        public List<string> locateFiles(string srcDir)
+        public (List<string> files, string? slnFilePath) locateFiles(string srcDir)
         {
             List<string> files = new List<string>();
+            string? slnFilePath = null;
             try
             {
                 var absolutePaths = Directory.GetFiles(srcDir, "*.*", SearchOption.AllDirectories);
@@ -14,12 +15,18 @@ namespace Roklem_Migrator.Services
                 files = absolutePaths
                     .Select(file => Path.GetRelativePath(srcDir, file))
                     .ToList();
+
+                var slnAbsolutePath = absolutePaths.FirstOrDefault(f => Path.GetExtension(f).Equals(".sln", StringComparison.OrdinalIgnoreCase));
+                if (slnAbsolutePath != null)
+                {
+                    slnFilePath = Path.GetRelativePath(srcDir, slnAbsolutePath);
+                }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error locating files: {ex.Message}");
             }
-            return files;
+            return (files, slnFilePath);
         }
 
         public List<string> getFileTypes(List<string> files)

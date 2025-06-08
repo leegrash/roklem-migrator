@@ -25,7 +25,12 @@ namespace Roklem_Migrator.Services
         {
             try
             {
-                List<string> files = _FileLocatorService.locateFiles(srcDir);
+                (List<string> files, string? slnFilePath )= _FileLocatorService.locateFiles(srcDir);
+
+                if(slnFilePath != null)
+                {
+                    slnFilePath = Path.Combine(targetDir, slnFilePath);
+                }
 
                 Console.WriteLine($"Located {files.Count} files");
 
@@ -46,7 +51,7 @@ namespace Roklem_Migrator.Services
 
                 TargetVersionResponse targetVersionResponse = _TargetVersionService.GetTargetVersion(supportedVersions).Result;
 
-                _FileMigratorService.MigrateFiles(filesToMigrate, srcDir, targetDir, targetVersionResponse);
+                _FileMigratorService.MigrateFiles(filesToMigrate, srcDir, targetDir, targetVersionResponse, slnFilePath);
 
                 return true;
             }

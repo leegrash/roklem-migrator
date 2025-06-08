@@ -11,45 +11,47 @@ namespace Roklem_Migrator.Services
         private readonly IFileWriterService _FileWriterService;
         private readonly IInvokeAzureAIRequestResponseService _InvokeAzureAIRequestResponseService;
         private readonly IFileHandlerService _FileHandlerService;
+        private readonly IBuildProjectService _BuildProjectService;
 
-        public FileMigratorService(IProgressBarService progressBarService, IFileReaderService fileReaderService, IFileWriterService fileWriterService, IInvokeAzureAIRequestResponseService invokeAzureAIRequestResponseService, IFileHandlerService fileHandlerService)
+        public FileMigratorService(IProgressBarService progressBarService, IFileReaderService fileReaderService, IFileWriterService fileWriterService, IInvokeAzureAIRequestResponseService invokeAzureAIRequestResponseService, IFileHandlerService fileHandlerService, IBuildProjectService buildProjectService)
         {
             _ProgressBarService = progressBarService;
             _FileReaderService = fileReaderService;
             _FileWriterService = fileWriterService;
             _InvokeAzureAIRequestResponseService = invokeAzureAIRequestResponseService;
             _FileHandlerService = fileHandlerService;
+            _BuildProjectService = buildProjectService;
         }
 
-        public void MigrateFiles(List<string> files, string srcDir, string targetDir, TargetVersionResponse targetVersionResponse)
+        public void MigrateFiles(List<string> files, string srcDir, string targetDir, TargetVersionResponse targetVersionResponse, string slnFilePath)
         {
-            List<string> migrationLog = new List<string>();
+            //List<string> migrationLog = new List<string>();
 
-            int currentStep = 0;
-            Console.WriteLine("Migrating files");
-            foreach (var file in files)
-            {
-                currentStep++;
-                _ProgressBarService.DisplayProgress(currentStep, files.Count);
+            //int currentStep = 0;
+            //Console.WriteLine("Migrating files");
+            //foreach (var file in files)
+            //{
+            //    currentStep++;
+            //    _ProgressBarService.DisplayProgress(currentStep, files.Count);
 
-                try
-                {
-                    MigrateFile(file, srcDir, targetDir, targetVersionResponse);
-                    migrationLog.Add($"Migrated file: {file}");
-                }
-                catch (Exception e)
-                {
-                    migrationLog.Add($"Error migrating file {file}: {e.Message}");
-                }
-            }
+            //    try
+            //    {
+            //        MigrateFile(file, srcDir, targetDir, targetVersionResponse);
+            //        migrationLog.Add($"Migrated file: {file}");
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        migrationLog.Add($"Error migrating file {file}: {e.Message}");
+            //    }
+            //}
 
-            Console.WriteLine("\n\n1st stage of migration completed. Migration log:");
-            foreach (var log in migrationLog)
-            {
-                Console.WriteLine(log);
-            }
+            //Console.WriteLine("\n\n1st stage of migration completed. Migration log:");
+            //foreach (var log in migrationLog)
+            //{
+            //    Console.WriteLine(log);
+            //}
 
-            Console.WriteLine();
+            (bool buildSuccess, List<string> buildErrors) = _BuildProjectService.BuildProject(slnFilePath);
         }
 
         private void MigrateFile(string file, string srcDir, string targetDir, TargetVersionResponse targetVersionResponse)

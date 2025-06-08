@@ -3,6 +3,6 @@
     internal interface IFileLocatorService
     {
         List<string> getFileTypes(List<string> files);
-        List<string> locateFiles(string rootPath);
+        public (List<string> files, string? slnFilePath) locateFiles(string srcDir);
     }
 }
