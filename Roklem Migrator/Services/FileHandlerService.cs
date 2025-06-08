@@ -88,5 +88,9 @@ namespace Roklem_Migrator.Services
         {
             return files.Select(file => Path.GetFileName(file)).ToList();
         }
+
+        public string getFileName(string filePath) { 
+            return Path.GetFileName(filePath);
+        }
     }
 }
