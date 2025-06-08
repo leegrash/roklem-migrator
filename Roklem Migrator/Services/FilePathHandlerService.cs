@@ -21,37 +21,5 @@ namespace Roklem_Migrator.Services
         {
             return !string.IsNullOrEmpty(path) && Directory.Exists(path);
         }
-
-        public string GetNewFilePath(string oldPath)
-        {
-            if (!IsPathValid(oldPath))
-            {
-                throw new Exception("Invalid file path");
-            }
-
-            string fileName = Path.GetFileName(oldPath);
-
-            string? parentDirectory = Path.GetDirectoryName(oldPath);
-
-            if (parentDirectory == null)
-            {
-                throw new Exception("Parent directory could not be determined");
-            }
-
-            string? grandParentDirectory = Directory.GetParent(parentDirectory)?.FullName;
-
-            if (grandParentDirectory != null)
-            {
-                string newDirectoryPath = Path.Combine(grandParentDirectory, "roklem-output");
-
-                string newPath = Path.Combine(newDirectoryPath, fileName);
-
-                return newPath;
-            }
-            else
-            {
-                throw new Exception("Could not generate new Path");
-            }
-        }
     }
 }

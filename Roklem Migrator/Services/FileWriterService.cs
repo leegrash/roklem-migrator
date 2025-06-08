@@ -10,18 +10,15 @@ namespace Roklem_Migrator.Services
             _FilePathHandlerService = filePathHandler;
         }
 
-        public void WriteToFile(string oldPath,string fileContent)
+        public void WriteToFile(string newPath,string fileContent)
         {
-            string newPath = _FilePathHandlerService.GetNewFilePath(oldPath);
-
             try
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(newPath));
                 File.WriteAllText(newPath, fileContent);
-                Console.WriteLine("Successfully wrote to file");
             }
             catch {
-                Console.WriteLine("Error writing to file");
+                throw new Exception($"Failed to write to file: {newPath}.");
             }
         }
     }

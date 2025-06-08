@@ -23,7 +23,7 @@ namespace Roklem_Migrator.Services
 
         public void MigrateFiles(List<string> files, string srcDir, string targetDir, TargetVersionResponse targetVersionResponse)
         {
-            List<string> migrationErrors = new List<string>();
+            List<string> migrationLog = new List<string>();
 
             int currentStep = 0;
             Console.WriteLine("Migrating files");
@@ -35,12 +35,21 @@ namespace Roklem_Migrator.Services
                 try
                 {
                     MigrateFile(file, srcDir, targetDir, targetVersionResponse);
+                    migrationLog.Add($"Migrated file: {file}");
                 }
                 catch (Exception e)
                 {
-                    migrationErrors.Add($"Error migrating file {file}: {e.Message}");
+                    migrationLog.Add($"Error migrating file {file}: {e.Message}");
                 }
             }
+
+            Console.WriteLine("\n\n1st stage of migration completed. Migration log:");
+            foreach (var log in migrationLog)
+            {
+                Console.WriteLine(log);
+            }
+
+            Console.WriteLine();
         }
 
         private void MigrateFile(string file, string srcDir, string targetDir, TargetVersionResponse targetVersionResponse)
@@ -51,15 +60,15 @@ namespace Roklem_Migrator.Services
 
             string migratinPrompt = GenerateMigrationPrompt(fileContent, targetVersionResponse.TargetVersion, targetVersionResponse.NonMigratablePackages, targetVersionResponse.ProposedDependencySolution, _FileHandlerService.getFileName(file));
 
-            var response = _InvokeAzureAIRequestResponseService.InvokeRequestResponse(migratinPrompt, 0).GetAwaiter().GetResult();
+            var response = _InvokeAzureAIRequestResponseService.InvokeRequestResponse(migratinPrompt, 1).GetAwaiter().GetResult();
 
-            _FileWriterService.WriteToFile(filePath, response);
+            _FileWriterService.WriteToFile(Path.Combine(targetDir, file), response);
         }
 
         private string GenerateMigrationPrompt(IEnumerable<string> fileContent, string targetVersion, List<string> nonMigratablePackages, Dictionary<string, string> proposedDependencySolution, string fileName)
         {
             StringBuilder promptBuilder = new StringBuilder();
-            promptBuilder.AppendLine($"You are a .net migration expert. Migrate the following code from the file {fileName} to the specified target version. Fix migration errors proposed below.");
+            promptBuilder.AppendLine($"You are a .net migration expert. Migrate the following vb .net framework code from the file {fileName} to the specified visual basic .net core target version. Fix migration errors proposed below.");
             promptBuilder.AppendLine($"Target Version: {targetVersion}");
             promptBuilder.AppendLine("Non-migratable packages:");
             foreach (var package in nonMigratablePackages)

@@ -2,6 +2,6 @@
 {
     internal interface IFileWriterService
     {
-        void WriteToFile(string oldPath, string fileContent);
+        void WriteToFile(string newPath, string fileContent);
     }
 }

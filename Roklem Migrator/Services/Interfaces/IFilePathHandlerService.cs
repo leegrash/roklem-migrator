@@ -4,6 +4,5 @@
     {
         (string srcDir, string targetDir) GetSrcAndTargetDirFromArg(string[] args);
         bool IsPathValid(string filePath);
-        string GetNewFilePath(string oldFilePath);
     }
 }
