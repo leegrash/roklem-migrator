@@ -1,0 +1,37 @@
+<NodeSoft>
+  <Applications>
+    <CoverPrinter>
+      <Version Latest="1.4.1.1" URL="http://www.nodesoft.com/coverprinter/getupdate" Info="Blu-ray 21 mm spine. Using .Net framework 4.7.2."/>
+    </CoverPrinter>
+    <DiskBench>
+      <Version Latest="2.8.1.0" URL="http://www.nodesoft.com/diskbench/getupdate" Info="Fixed bug introduced in 2.8.0.1. Command line parameters now more resemble settings in GUI."/>
+    </DiskBench>
+    <EraseTemp>
+      <Version Latest="3.5.4.0" URL="http://www.nodesoft.com/erasetemp/getupdate" Info="Minor fixes."/>
+    </EraseTemp>
+    <FileVer>
+      <Version Latest="6.1.0.4" URL="http://www.nodesoft.com/filever/getupdate" Info="Minor change to work better on larger text sizes."/>
+    </FileVer>
+    <FolderMonitor>
+      <Version Latest="1.4.0.1" URL="http://www.nodesoft.com/foldermonitor/getupdate" Info="Added Description to settings for folder."/>
+    </FolderMonitor>
+    <FolderUsage>
+      <Version Latest="1.4.2.1" URL="http://www.nodesoft.com/folderusage/getupdate" Info="Delete folder from context menu for files."/>
+    </FolderUsage>
+    <IISLogfileAnalyser>
+      <Version Latest="2.6.0.0" URL="http://www.nodesoft.com/iislogfileanalyser/getupdate" Info="New function: Visitors per day per url."/>
+    </IISLogfileAnalyser>
+    <MP3Rename>
+      <Version Latest="8.3.2.1" URL="http://www.nodesoft.com/mp3rename/getupdate" Info="Minor change to work better on larger text sizes."/>
+    </MP3Rename>
+    <SearchAndReplace>
+      <Version Latest="3.1.0.2" URL="http://www.nodesoft.com/searchandreplace/getupdate" Info="New version. Supports profiles. Test Mode, and preview mode. DO NOT DELETE your current version, as this version is very different, you may want to use both."/>
+    </SearchAndReplace>
+    <TreeSize>
+      <Version Latest="1.1.0.5" URL="http://www.nodesoft.com/folderusage/getupdate" Info="Minor change to work better on larger text sizes."/>
+    </TreeSize>
+    <VBAnalyzer>
+      <Version Latest="1.1.0.1" URL="http://www.nodesoft.com/vbdotnetanalyser/getupdate" Info="Minor change to work better on larger text sizes."/>
+    </VBAnalyzer>
+  </Applications>
+</NodeSoft>

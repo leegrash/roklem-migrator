@@ -1,0 +1,289 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <RootNamespace>Nodesoft</RootNamespace>
+    <AssemblyName>Nodesoft</AssemblyName>
+    <OutputType>Library</OutputType>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="6.0.1" /> <!-- Updated version to 6.0.1 to ensure availability -->
+    <PackageReference Include="jQuery" Version="3.6.0" />
+    <PackageReference Include="jQuery.UI" Version="1.12.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Controllers\coverprinterController.vb" />
+    <Compile Include="Controllers\diskbenchController.vb" />
+    <Compile Include="Controllers\erasetempController.vb" />
+    <Compile Include="Controllers\fileverController.vb" />
+    <Compile Include="Controllers\foldermonitorController.vb" />
+    <Compile Include="Controllers\folderusageController.vb" />
+    <Compile Include="Controllers\HomeController.vb" />
+    <Compile Include="Controllers\iislogfileanalyserController.vb" />
+    <Compile Include="Controllers\mp3renameController.vb" />
+    <Compile Include="Controllers\nodesoftBaseController.vb" />
+    <Compile Include="Controllers\searchandreplaceController.vb" />
+    <Compile Include="Controllers\supportController.vb" />
+    <Compile Include="Controllers\vbdotnetanalyserController.vb" />
+    <Compile Include="Global.asax.vb" >
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="My Project\AssemblyInfo.vb" />
+    <Compile Include="My Project\Application.Designer.vb" >
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Application.myapp</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="My Project\Resources.Designer.vb" >
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="My Project\Settings.Designer.vb" >
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="My Project\Resources.resx">
+      <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.vb</LastGenOutput>
+      <CustomToolNamespace>My.Resources</CustomToolNamespace>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="content\images\coverprinter\1.png" />
+    <Content Include="content\images\coverprinter\2.png" />
+    <Content Include="content\images\coverprinter\3.png" />
+    <Content Include="content\images\coverprinter\4.png" />
+    <Content Include="content\images\coverprinter\5.png" />
+    <Content Include="content\images\coverprinter\6.png" />
+    <Content Include="content\images\coverprinter\7.png" />
+    <Content Include="content\images\coverprinter\8.png" />
+    <Content Include="content\images\coverprinter\downloadtyphoon_award_pick.gif" />
+    <Content Include="content\images\coverprinter\softsea-clean-1.gif" />
+    <Content Include="content\images\coverprinter\soft82-award-icon.gif" />
+    <Content Include="content\images\coverprinter\soft82-clean-award-41329.png" />
+    <Content Include="content\images\coverprinter\softonic-clean.png" />
+    <Content Include="content\images\coverprinter\softsea-3stars-1.gif" />
+    <Content Include="content\images\coverprinter\windows7download_award_120x60.png" />
+    <Content Include="content\images\diskbench\bestsoftwaredownloads5.png" />
+    <Content Include="content\images\diskbench\bfd_award5.gif" />
+    <Content Include="content\images\diskbench\diskbenchdownloadtube.jpg" />
+    <Content Include="content\images\diskbench\downloadroute_editorspick_70x70.png" />
+    <Content Include="content\images\diskbench\downloadtyphoon-120x60-editors-pick.gif" />
+    <Content Include="content\images\diskbench\downloadtyphoon-award-120x60-5.gif" />
+    <Content Include="content\images\diskbench\fileclusterclean.gif" />
+    <Content Include="content\images\diskbench\ilovefreesoftware_reviewed_5Star.png" />
+    <Content Include="content\images\diskbench\pro-logo-5stars-1.jpg" />
+    <Content Include="content\images\diskbench\pro-logo-clean-1.jpg" />
+    <Content Include="content\images\diskbench\screenshot.png" />
+    <Content Include="content\images\diskbench\softonic_35stars.gif" />
+    <Content Include="content\images\diskbench\softpedia_free_award_f.gif" />
+    <Content Include="content\images\diskbench\t4d_editors.gif" />
+    <Content Include="content\images\diskbench\t4d_editors_120x60_pick.gif" />
+    <Content Include="content\images\diskbench\t4d_editors_88x31_pick.gif" />
+    <Content Include="content\images\erasetemp\download3k-award.gif" />
+    <Content Include="content\images\erasetemp\downloadtyphoon_award_pick.gif" />
+    <Content Include="content\images\erasetemp\eraseremp_award_roxysoft.png" />
+    <Content Include="content\images\erasetemp\mg_approved.gif" />
+    <Content Include="content\images\erasetemp\mg_certified.gif" />
+    <Content Include="content\images\erasetemp\rosoftd_award_130x160.gif" />
+    <Content Include="content\images\erasetemp\rosoftd_award_139x70.gif" />
+    <Content Include="content\images\erasetemp\rosoftd_award_71x120.gif" />
+    <Content Include="content\images\erasetemp\rosoftd_award_80x135.gif" />
+    <Content Include="content\images\erasetemp\safetoinstall.png" />
+    <Content Include="content\images\erasetemp\screenshot.png" />
+    <Content Include="content\images\erasetemp\soft82_award_130x130.gif" />
+    <Content Include="content\images\erasetemp\soft82_award_50x81.gif" />
+    <Content Include="content\images\erasetemp\soft82_award_88x31.gif" />
+    <Content Include="content\images\erasetemp\soft82_award_88x88.gif" />
+    <Content Include="content\images\erasetemp\soft82_clean_award_21436.png" />
+    <Content Include="content\images\erasetemp\Softdownload22_award113x151.gif" />
+    <Content Include="content\images\erasetemp\Softdownload22_award170x79.gif" />
+    <Content Include="content\images\erasetemp\Softdownload22_award175x68.gif" />
+    <Content Include="content\images\erasetemp\Softdownload22_award_108x88.gif" />
+    <Content Include="content\images\erasetemp\softonic_3stars.gif" />
+    <Content Include="content\images\erasetemp\windows7download_award_120x60.png" />
+    <Content Include="content\images\erasetemp\x-64-bit-download-award-5.gif" />
+    <Content Include="content\images\erasetemp\x-64-bit-download-award_120x60-5.gif" />
+    <Content Include="content\images\erasetemp\x-64-bit-download-award_88x31-5.gif" />
+    <Content Include="content\images\filever\screenshot.png" />
+    <Content Include="content\images\foldermonitor\famous_software_award_famouswhy_logo_3.png" />
+    <Content Include="content\images\foldermonitor\screenshot1.png" />
+    <Content Include="content\images\foldermonitor\screenshot2.png" />
+    <Content Include="content\images\foldermonitor\screenshot3.png" />
+    <Content Include="content\images\foldermonitor\screenshot4.png" />
+    <Content Include="content\images\foldermonitor\soft82_clean_award.png" />
+    <Content Include="content\images\folderusage\screenshot1.png" />
+    <Content Include="content\images\folderusage\screenshot2.png" />
+    <Content Include="content\images\iislogfileanalyser\screenshot1.png" />
+    <Content Include="content\images\iislogfileanalyser\screenshot2.png" />
+    <Content Include="content\images\mp3rename\screenshot1.png" />
+    <Content Include="content\images\searchandreplace\screenshot1.png" />
+    <Content Include="content\images\searchandreplace\screenshot2.png" />
+    <Content Include="content\images\vbdotnetanalyser\screenshot.png" />
+    <Content Include="content\programs\coverprinter.xml" />
+    <Content Include="content\programs\diskbench.xml" />
+    <Content Include="content\programs\erasetemp.xml" />
+    <Content Include="content\programs\erasetemp.zip" />
+    <Content Include="content\programs\filever.xml" />
+    <Content Include="content\programs\foldermonitor.xml" />
+    <Content Include="content\programs\folderusage.xml" />
+    <Content Include="content\programs\iislogfileanalyser.xml" />
+    <Content Include="content\programs\mp3rename.xml" />
+    <Content Include="content\programs\searchandreplace.xml" />
+    <Content Include="content\programs\vbdotnetanalyser.xml" />
+    <Content Include="content\themes\base\accordion.css" />
+    <Content Include="content\themes\base\all.css" />
+    <Content Include="content\themes\base\autocomplete.css" />
+    <Content Include="content\themes\base\base.css" />
+    <Content Include="content\themes\base\button.css" />
+    <Content Include="content\themes\base\core.css" />
+    <Content Include="content\themes\base\datepicker.css" />
+    <Content Include="content\themes\base\dialog.css" />
+    <Content Include="content\themes\base\draggable.css" />
+    <Content Include="content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="content\themes\base\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="content\themes\base\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="content\themes\base\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="content\themes\base\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="content\themes\base\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="content\themes\base\images\ui-icons_222222_256x240.png" />
+    <Content Include="content\themes\base\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="content\themes\base\images\ui-icons_444444_256x240.png" />
+    <Content Include="content\themes\base\images\ui-icons_454545_256x240.png" />
+    <Content Include="content\themes\base\images\ui-icons_555555_256x240.png" />
+    <Content Include="content\themes\base\images\ui-icons_777620_256x240.png" />
+    <Content Include="content\themes\base\images\ui-icons_777777_256x240.png" />
+    <Content Include="content\themes\base\images\ui-icons_888888_256x240.png" />
+    <Content Include="content\themes\base\images\ui-icons_cc0000_256x240.png" />
+    <Content Include="content\themes\base\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="content\themes\base\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="content\themes\base\jquery-ui.css" />
+    <Content Include="content\themes\base\jquery-ui.min.css" />
+    <Content Include="content\themes\base\menu.css" />
+    <Content Include="content\themes\base\progressbar.css" />
+    <Content Include="content\themes\base\resizable.css" />
+    <Content Include="content\themes\base\selectable.css" />
+    <Content Include="content\themes\base\selectmenu.css" />
+    <Content Include="content\themes\base\slider.css" />
+    <Content Include="content\themes\base\sortable.css" />
+    <Content Include="content\themes\base\spinner.css" />
+    <Content Include="content\themes\base\tabs.css" />
+    <Content Include="content\themes\base\theme.css" />
+    <Content Include="content\themes\base\tooltip.css" />
+    <Content Include="content\Web.config" />
+    <Content Include="content\programs\coverprinter.zip" />
+    <Content Include="content\programs\diskbench.zip" />
+    <Content Include="content\programs\filever.zip" />
+    <Content Include="content\programs\foldermonitor.zip" />
+    <Content Include="content\programs\folderusage.zip" />
+    <Content Include="content\programs\iislogfileanalyser.zip" />
+    <Content Include="content\programs\mp3rename.zip" />
+    <Content Include="content\programs\vbdotnetanalyser.zip" />
+    <Content Include="content\programs\searchandreplace.zip" />
+    <None Include="My Project\Application.myapp" >
+      <Generator>MyApplicationCodeGenerator</Generator>
+      <LastGenOutput>Application.Designer.vb</LastGenOutput>
+    </None>
+    <None Include="My Project\PublishProfiles\Websidan.pubxml" />
+    <None Include="My Project\Settings.settings" >
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <CustomToolNamespace>My</CustomToolNamespace>
+      <LastGenOutput>Settings.Designer.vb</LastGenOutput>
+    </None>
+    <Content Include="content\css\site.css" />
+    <Content Include="content\ico\nodesoft.ico" />
+    <Content Include="content\images\site-design\site.jpg" />
+    <Content Include="content\themes\base\jquery.ui.accordion.css" />
+    <Content Include="content\themes\base\jquery.ui.all.css" />
+    <Content Include="content\themes\base\jquery.ui.autocomplete.css" />
+    <Content Include="content\themes\base\jquery.ui.button.css" />
+    <Content Include="content\themes\base\jquery.ui.core.css" />
+    <Content Include="content\themes\base\jquery.ui.datepicker.css" />
+    <Content Include="content\themes\base\jquery.ui.dialog.css" />
+    <Content Include="content\themes\base\jquery.ui.progressbar.css" />
+    <Content Include="content\themes\base\jquery.ui.resizable.css" />
+    <Content Include="content\themes\base\jquery.ui.selectable.css" />
+    <Content Include="content\themes\base\jquery.ui.slider.css" />
+    <Content Include="content\themes\base\jquery.ui.tabs.css" />
+    <Content Include="content\themes\base\jquery.ui.theme.css" />
+    <Content Include="google79d80541a7696ed5.html" />
+    <Content Include="nortonsw_0ebfd550-9927-0.html" />
+    <Content Include="packages.config" >
+      <SubType>Designer</SubType>
+    </Content>
+    <None Include="scripts\jquery-3.7.1.intellisense.js" />
+    <Content Include="README.jQuery.vsdoc.txt" />
+    <Content Include="scripts\jquery-3.7.1.js" />
+    <Content Include="scripts\jquery-3.7.1.min.js" />
+    <Content Include="scripts\jquery-3.7.1.slim.js" />
+    <Content Include="scripts\jquery-3.7.1.slim.min.js" />
+    <Content Include="scripts\jquery-ui-1-13.3.js" />
+    <Content Include="scripts\jquery-ui-1-13.3.min.js" />
+    <None Include="scripts\jquery.validate-vsdoc.js" />
+    <Content Include="scripts\jquery.validate.js" />
+    <Content Include="scripts\jquery.validate.min.js" />
+    <Content Include="scripts\modernizr-2.8.3.js" />
+    <Content Include="version.xml" />
+    <Content Include="Views\Home\Index.vbhtml" />
+    <Content Include="Views\erasetemp\Index.vbhtml" />
+    <Content Include="scripts\Web.config" />
+    <Content Include="Views\erasetemp\revision.vbhtml" />
+    <Content Include="Views\coverprinter\Index.vbhtml" />
+    <Content Include="Views\coverprinter\revision.vbhtml" />
+    <Content Include="Views\diskbench\Index.vbhtml" />
+    <Content Include="Views\diskbench\revision.vbhtml" />
+    <Content Include="Views\filever\Index.vbhtml" />
+    <Content Include="Views\filever\revision.vbhtml" />
+    <Content Include="Views\foldermonitor\Index.vbhtml" />
+    <Content Include="Views\foldermonitor\revision.vbhtml" />
+    <Content Include="Views\folderusage\Index.vbhtml" />
+    <Content Include="Views\folderusage\revision.vbhtml" />
+    <Content Include="Views\iislogfileanalyser\Index.vbhtml" />
+    <Content Include="Views\iislogfileanalyser\revision.vbhtml" />
+    <Content Include="Views\mp3rename\Index.vbhtml" />
+    <Content Include="Views\mp3rename\revision.vbhtml" />
+    <Content Include="Views\searchandreplace\Index.vbhtml" />
+    <Content Include="Views\searchandreplace\revision.vbhtml" />
+    <Content Include="Views\vbdotnetanalyser\Index.vbhtml" />
+    <Content Include="Views\vbdotnetanalyser\revision.vbhtml" />
+    <Content Include="Views\support\Index.vbhtml" />
+    <Content Include="scripts\jquery-3.7.1.slim.min.map" />
+    <Content Include="scripts\jquery-3.7.1.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Global.asax" />
+    <Content Include="scripts\jquery-1.5.1-vsdoc.js" />
+    <Content Include="scripts\jquery-1.5.1.js" />
+    <Content Include="scripts\jquery-1.5.1.min.js" />
+    <Content Include="scripts\jquery-ui-1.8.11.js" />
+    <Content Include="scripts\jquery-ui-1.8.11.min.js" />
+    <Content Include="scripts\modernizr-1.7.js" />
+    <Content Include="scripts\modernizr-1.7.min.js" />
+    <Content Include="Views\Web.config" />
+    <Content Include="Views\_ViewStart.vbhtml" />
+    <Content Include="Views\Shared\Error.vbhtml" />
+    <Content Include="Views\Shared\_Layout.vbhtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
+</Project>
+
+<!-- Changes made:
+1. Removed duplicate import statement for 'Microsoft.VisualBasic.targets'.
+2. Ensured 'Microsoft.AspNetCore.Mvc' package reference is correctly stated to version '6.0.1' to avoid build errors.
+-->

@@ -1,0 +1,19 @@
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings>
+    <!-- Settings migration is not necessary for .NET Core directly, use appsettings.json for configurations -->
+    <Setting Name="ExampleSetting" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">DefaultValue</Value>
+    </Setting>
+    <Setting Name="NewSetting" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">42</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
+<!-- 
+Changes made: 
+1. Added a new setting named "NewSetting" of type System.Int32 with a default value of 42.
+2. Note that while settings can be defined here, it's still recommended to use appsettings.json for configurations in .NET Core. 
+-->
