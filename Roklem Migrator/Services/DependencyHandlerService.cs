@@ -87,8 +87,15 @@ namespace Roklem_Migrator.Services
                     var doc = XDocument.Load(filePath);
                     dependencies.AddRange(
                         doc.Descendants("package")
-                           .Select(p => p.Attribute("id")?.Value)
-                           .Where(id => !string.IsNullOrWhiteSpace(id))!
+                           .Select(p =>
+                           {
+                               var id = p.Attribute("id")?.Value;
+                               var version = p.Attribute("version")?.Value;
+                               return !string.IsNullOrWhiteSpace(id) && !string.IsNullOrWhiteSpace(version)
+                                   ? $"{id}:{version}"
+                                   : null;
+                           })
+                           .Where(dep => !string.IsNullOrWhiteSpace(dep))!
                     );
                 }
                 else if (fileName.EndsWith(".vbproj", StringComparison.OrdinalIgnoreCase))
@@ -96,21 +103,50 @@ namespace Roklem_Migrator.Services
                     var doc = XDocument.Load(filePath);
                     dependencies.AddRange(
                         doc.Descendants("Reference")
-                           .Select(r => r.Attribute("Include")?.Value?.Split(',')[0])
-                           .Where(name => !string.IsNullOrWhiteSpace(name))!
-                           .Select(name => name!)
+                           .Select(r =>
+                           {
+                               var include = r.Attribute("Include")?.Value;
+                               if (string.IsNullOrWhiteSpace(include))
+                                   return null;
+                               var parts = include.Split(',');
+                               var name = parts[0].Trim();
+                               var version = parts
+                                   .Select(p => p.Trim())
+                                   .FirstOrDefault(p => p.StartsWith("Version=", StringComparison.OrdinalIgnoreCase));
+                               if (!string.IsNullOrWhiteSpace(version))
+                               {
+                                   version = version.Substring("Version=".Length);
+                                   return $"{name}:{version}";
+                               }
+                               return name;
+                           })
+                           .Where(dep => !string.IsNullOrWhiteSpace(dep))!
                     );
                 }
                 else if (fileName.Equals("web.config", StringComparison.OrdinalIgnoreCase) ||
                          fileName.Equals("app.config", StringComparison.OrdinalIgnoreCase))
                 {
                     var doc = XDocument.Load(filePath);
-                    XNamespace ns = "urn:schemas-microsoft-com:asm.v1";
                     dependencies.AddRange(
-                        doc.Descendants(ns + "assemblyIdentity")
-                           .Select(ai => ai.Attribute("name")?.Value)
-                           .Where(name => !string.IsNullOrWhiteSpace(name))!
-                           .Select(name => name!)
+                        doc.Descendants("add")
+                           .Select(add =>
+                           {
+                               var assemblyAttr = add.Attribute("assembly")?.Value;
+                               if (string.IsNullOrWhiteSpace(assemblyAttr))
+                                   return null;
+                               var parts = assemblyAttr.Split(',');
+                               var name = parts[0].Trim();
+                               var versionPart = parts
+                                   .Select(p => p.Trim())
+                                   .FirstOrDefault(p => p.StartsWith("Version=", StringComparison.OrdinalIgnoreCase));
+                               if (!string.IsNullOrWhiteSpace(versionPart))
+                               {
+                                   var version = versionPart.Substring("Version=".Length);
+                                   return $"{name}:{version}";
+                               }
+                               return name;
+                           })
+                           .Where(dep => !string.IsNullOrWhiteSpace(dep))!
                     );
                 }
             }
