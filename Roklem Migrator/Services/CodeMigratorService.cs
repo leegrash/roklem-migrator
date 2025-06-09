@@ -21,7 +21,7 @@ namespace Roklem_Migrator.Services
             _FileMigratorService = fileMigratorService;
         }
 
-        public bool Migrate(string srcDir, string targetDir)
+        public bool Migrate(string srcDir, string targetDir, int llmIterations)
         {
             try
             {
@@ -31,8 +31,12 @@ namespace Roklem_Migrator.Services
                 {
                     slnFilePath = Path.Combine(targetDir, slnFilePath);
                 }
+                else
+                {
+                    throw new Exception("Solution file not found in source directory.");
+                }
 
-                Console.WriteLine($"Located {files.Count} files");
+                    Console.WriteLine($"Located {files.Count} files");
 
                 var (filesToMigrate, filesToCopy) = _FileHandlerService.distinguisFiles(files);
 
@@ -51,7 +55,7 @@ namespace Roklem_Migrator.Services
 
                 TargetVersionResponse targetVersionResponse = _TargetVersionService.GetTargetVersion(supportedVersions).Result;
 
-                _FileMigratorService.MigrateFiles(filesToMigrate, srcDir, targetDir, targetVersionResponse, slnFilePath);
+                _FileMigratorService.MigrateFiles(filesToMigrate, srcDir, targetDir, targetVersionResponse, slnFilePath, llmIterations);
 
                 return true;
             }

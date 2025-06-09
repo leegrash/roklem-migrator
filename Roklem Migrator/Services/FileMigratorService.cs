@@ -23,35 +23,72 @@ namespace Roklem_Migrator.Services
             _BuildProjectService = buildProjectService;
         }
 
-        public void MigrateFiles(List<string> files, string srcDir, string targetDir, TargetVersionResponse targetVersionResponse, string slnFilePath)
+        public void MigrateFiles(List<string> files, string srcDir, string targetDir, TargetVersionResponse targetVersionResponse, string slnFilePath, int llmIterations)
         {
-            //List<string> migrationLog = new List<string>();
+            List<string> migrationLog = new List<string>();
 
-            //int currentStep = 0;
-            //Console.WriteLine("Migrating files");
-            //foreach (var file in files)
-            //{
-            //    currentStep++;
-            //    _ProgressBarService.DisplayProgress(currentStep, files.Count);
+            int currentStep = 0;
+            Console.WriteLine("Migrating files");
+            foreach (var file in files)
+            {
+                currentStep++;
+                _ProgressBarService.DisplayProgress(currentStep, files.Count);
 
-            //    try
-            //    {
-            //        MigrateFile(file, srcDir, targetDir, targetVersionResponse);
-            //        migrationLog.Add($"Migrated file: {file}");
-            //    }
-            //    catch (Exception e)
-            //    {
-            //        migrationLog.Add($"Error migrating file {file}: {e.Message}");
-            //    }
-            //}
+                try
+                {
+                    MigrateFile(file, srcDir, targetDir, targetVersionResponse);
+                    migrationLog.Add($"Migrated file: {file}");
+                }
+                catch (Exception e)
+                {
+                    migrationLog.Add($"Error migrating file {file}: {e.Message}");
+                }
+            }
 
-            //Console.WriteLine("\n\n1st stage of migration completed. Migration log:");
-            //foreach (var log in migrationLog)
-            //{
-            //    Console.WriteLine(log);
-            //}
+            Console.WriteLine("\n\n1st stage of migration completed. Migration log:");
+            foreach (var log in migrationLog)
+            {
+                Console.WriteLine(log);
+            }
 
             (bool buildSuccess, List<string> buildErrors) = _BuildProjectService.BuildProject(slnFilePath);
+
+            while (!buildSuccess && llmIterations > 0)
+            {
+                currentStep = 0;
+                Console.WriteLine("Attempting to fix errors");
+                
+                foreach (var file in files)
+                {
+                    currentStep++;
+                    _ProgressBarService.DisplayProgress(currentStep, files.Count);
+
+                    try
+                    {
+                        FixBuildErrors(Path.Combine(targetDir, file), targetVersionResponse.TargetVersion, _FileHandlerService.getFileName(file), buildErrors);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"Error migrating file {file}: {e.Message}");
+                    }
+                }
+                _ProgressBarService.stopProgressBar("Attempt to fix build errors completed.");
+                (buildSuccess, buildErrors) = _BuildProjectService.BuildProject(slnFilePath);
+                llmIterations--;
+            }
+
+            if (buildSuccess)
+            {
+                Console.WriteLine("Build successful after migration and fixes.");
+            }
+            else
+            {
+                Console.WriteLine($"Build failed after migration and {llmIterations} build error fix iterations. Remaining errors:");
+                foreach (var error in buildErrors)
+                {
+                    Console.WriteLine(error);
+                }
+            }
         }
 
         private void MigrateFile(string file, string srcDir, string targetDir, TargetVersionResponse targetVersionResponse)
@@ -89,6 +126,37 @@ namespace Roklem_Migrator.Services
             }
 
             promptBuilder.AppendLine("Return the migrated code and possible fixes that cannot be migrated. Comment what you have changed at the end. Do not include any markdown code block syntax (e.g., ,xml, ```json, etc.). The response should only contain executable code and comments in the given format, no other text or characters.");
+            return promptBuilder.ToString();
+        }
+
+        private void FixBuildErrors(string filePath, string targetVersion, string fileName, List<string> buildErrors)
+        {
+            IEnumerable<string> fileContent = _FileReaderService.ReadFile(filePath);
+            string errorFixPrompt = GenerateErrorFixPrompt(fileContent, targetVersion, fileName, buildErrors);
+            var response = _InvokeAzureAIRequestResponseService.InvokeRequestResponse(errorFixPrompt, 1).GetAwaiter().GetResult();
+            _FileWriterService.WriteToFile(filePath, response);
+        }
+
+        private string GenerateErrorFixPrompt(IEnumerable<string> fileContent, string targetVersion, string fileName, List<string> buildErrors)
+        {
+            StringBuilder promptBuilder = new StringBuilder();
+            promptBuilder.AppendLine($"You are a .net migration expert. The following file named {fileName} is part of a visual basic project that has been migrated from .net framework to .net core with the following target version: {targetVersion}");
+            promptBuilder.AppendLine($"The following build errors occur in the project");
+
+            foreach (var error in buildErrors)
+            {
+                promptBuilder.AppendLine($"- {error}");
+            }
+
+            promptBuilder.AppendLine("The code in the file is as follows:");
+
+            foreach (var line in fileContent)
+            {
+                promptBuilder.AppendLine(line);
+            }
+
+            promptBuilder.AppendLine("Return the code with the fixes applied. Comment what you have changed at the end. Do not include any markdown code block syntax (e.g., ,xml, ```json, etc.). The response should only contain executable code and comments in the given format, no other text or characters.");
+
             return promptBuilder.ToString();
         }
     }

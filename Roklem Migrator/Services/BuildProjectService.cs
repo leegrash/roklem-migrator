@@ -39,6 +39,11 @@ namespace Roklem_Migrator.Services
                     errorList.AddRange(ParseErrors(errors));
                 }
 
+                if (!string.IsNullOrWhiteSpace(output))
+                {
+                    errorList.AddRange(ParseErrors(output));
+                }
+
                 Console.WriteLine("\nBuild Output:");
                 Console.WriteLine(output);
                 Console.WriteLine("\nBuild Errors:");

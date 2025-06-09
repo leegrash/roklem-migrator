@@ -2,6 +2,6 @@
 {
     internal interface ICodeMigratorService
     {
-        public bool Migrate(string srcDir, string targetDir);
+        public bool Migrate(string srcDir, string targetDir, int llmIterations);
     }
 }

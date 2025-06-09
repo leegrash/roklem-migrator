@@ -33,13 +33,15 @@ class Program
         var filePathHandler = serviceProvider.GetRequiredService<IFilePathHandlerService>();
         var codeMigrator = serviceProvider.GetRequiredService<ICodeMigratorService>();
 
+        int llmIterations = 3;
+
         (string srcDir, string targetDir) = filePathHandler.GetSrcAndTargetDirFromArg(args);
 
         try
         {
             if (filePathHandler.IsPathValid(srcDir))
             {
-                codeMigrator.Migrate(srcDir, targetDir);
+                codeMigrator.Migrate(srcDir, targetDir, llmIterations);
 
                 Console.WriteLine("Done");
             }

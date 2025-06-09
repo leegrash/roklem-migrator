@@ -8,6 +8,6 @@ namespace Roklem_Migrator.Services.Interfaces
 {
     internal interface IFileMigratorService
     {
-        public void MigrateFiles(List<string> files, string srcDir, string targetDir, TargetVersionResponse targetVersionResponse, string slnFilePath);
+        public void MigrateFiles(List<string> files, string srcDir, string targetDir, TargetVersionResponse targetVersionResponse, string slnFilePath, int llmIterations);
     }
 }
