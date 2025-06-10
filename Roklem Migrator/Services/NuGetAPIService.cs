@@ -46,9 +46,11 @@ namespace Roklem_Migrator.Services
 
         private async Task<List<string>> GetSupportedFrameworksForPackageAsync(string packageName)
         {
-            string lowerName = packageName.ToLowerInvariant();
-            string indexUrl = $"https://api.nuget.org/v3/registration5-gz-semver2/{lowerName}/index.json";
+            var parts = packageName.ToLowerInvariant().Split(':');
+            string lowerName = parts[0];
+            string version = parts[1];
 
+            string indexUrl = $"https://api.nuget.org/v3/registration5-gz-semver2/{lowerName}/index.json";
             var indexResponse = await _httpClient.GetAsync(indexUrl);
             indexResponse.EnsureSuccessStatusCode();
 
@@ -63,35 +65,46 @@ namespace Roklem_Migrator.Services
             using var reader = new StreamReader(contentStream);
             string json = await reader.ReadToEndAsync();
 
-            var frameworks = new HashSet<string>();
             var root = JsonNode.Parse(json);
             var items = root?["items"]?.AsArray();
-            if (items != null)
+            if (items == null)
+                return new List<string>();
+
+            foreach (var page in items)
             {
-                foreach (var page in items)
+                var pageItems = page?["items"]?.AsArray();
+                if (pageItems == null)
+                    continue;
+
+                foreach (var pkg in pageItems)
                 {
-                    var pageItems = page?["items"]?.AsArray();
-                    if (pageItems != null)
+                    var catalogEntry = pkg?["catalogEntry"];
+                    var pkgVersion = catalogEntry?["version"]?.ToString();
+                    if (!string.Equals(pkgVersion, version, StringComparison.OrdinalIgnoreCase))
+                        continue;
+
+                    var dependencyGroups = catalogEntry?["dependencyGroups"]?.AsArray();
+                    if (dependencyGroups == null)
+                        return new List<string>();
+
+                    var frameworks = new List<string>();
+                    foreach (var group in dependencyGroups)
                     {
-                        foreach (var pkg in pageItems)
+                        var tfm = group?["targetFramework"]?.ToString();
+                        if (!string.IsNullOrEmpty(tfm) &&
+                            (tfm.StartsWith(".NETCoreApp", StringComparison.OrdinalIgnoreCase) ||
+                             tfm.StartsWith(".NETStandard", StringComparison.OrdinalIgnoreCase) ||
+                             tfm.StartsWith("netcoreapp", StringComparison.OrdinalIgnoreCase) ||
+                             tfm.StartsWith("netstandard", StringComparison.OrdinalIgnoreCase)))
                         {
-                            var catalogEntry = pkg?["catalogEntry"];
-                            var dependencyGroups = catalogEntry?["dependencyGroups"]?.AsArray();
-                            if (dependencyGroups != null)
-                            {
-                                foreach (var group in dependencyGroups)
-                                {
-                                    var tfm = group?["targetFramework"]?.ToString();
-                                    if (!string.IsNullOrEmpty(tfm))
-                                        frameworks.Add(tfm);
-                                }
-                            }
+                            frameworks.Add(tfm);
                         }
                     }
+                    return frameworks.Distinct().ToList();
                 }
             }
 
-            return frameworks.ToList();
+            return new List<string>();
         }
     }
 }

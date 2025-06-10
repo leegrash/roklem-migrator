@@ -71,7 +71,12 @@ namespace Roklem_Migrator.Services
 
             foreach(string package in supportedVersions.Keys)
             {
-                prompt += $"\n{package} - ";
+                var parts = package.Split(':');
+
+                string packageName = parts[0].Trim();
+                string packageVersion = parts[1].Trim();
+
+                prompt += $"\n{packageName} {packageVersion} - ";
 
                 foreach(string version in supportedVersions[package])
                 {

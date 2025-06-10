@@ -6,9 +6,12 @@ namespace Roklem_Migrator.Services
     internal class BuildProjectService : IBuildProjectService
     {
         private readonly ISpinnerService _SpinnerService;
+        private readonly ICommonService _CommonService;
 
-        public BuildProjectService(ISpinnerService spinnerService) { 
+
+        public BuildProjectService(ISpinnerService spinnerService, ICommonService commonService) { 
             _SpinnerService = spinnerService;
+            _CommonService = commonService;
         }
         
         public (bool sucess, List<string> errors) BuildProject(string slnFilePath)
@@ -47,7 +50,7 @@ namespace Roklem_Migrator.Services
                 Console.WriteLine("\nBuild Output:");
                 Console.WriteLine(output);
                 Console.WriteLine("\nBuild Errors:");
-                Console.WriteLine(errors);
+                _CommonService.printList(errorList);
             }
             
             _SpinnerService.StopSpinner();
@@ -58,10 +61,12 @@ namespace Roklem_Migrator.Services
         private List<string> ParseErrors(string errorOutput)
         {
             List<string> parsedErrors = new List<string>();
+            var errorSummaryPattern = new System.Text.RegularExpressions.Regex(@"^\d+\s+Error\(s\)", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
 
             foreach (string line in errorOutput.Split(Environment.NewLine))
             {
-                if (line.Contains("error", StringComparison.OrdinalIgnoreCase))
+                if (line.Contains("error", StringComparison.OrdinalIgnoreCase) &&
+                    !errorSummaryPattern.IsMatch(line.Trim()))
                 {
                     parsedErrors.Add(line.Trim());
                 }
