@@ -14,14 +14,14 @@ namespace Roklem_Migrator.Services
             _CommonService = commonService;
         }
         
-        public (bool sucess, List<string> errors) BuildProject(string slnFilePath)
+        public (bool success, List<string> errors) BuildProject(string slnFilePath)
         {
             _SpinnerService.StartSpinner("Building project...", "Build complete");
 
             ProcessStartInfo startInfo = new ProcessStartInfo
             {
                 FileName = "dotnet",
-                Arguments = $"build \"{slnFilePath}\"",
+                Arguments = $"build \"{slnFilePath}\" /p:ContinueOnError=true -v detailed",
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 UseShellExecute = false,
@@ -61,12 +61,12 @@ namespace Roklem_Migrator.Services
         private List<string> ParseErrors(string errorOutput)
         {
             List<string> parsedErrors = new List<string>();
+            var errorPattern = new System.Text.RegularExpressions.Regex(@":\s*error\s+[A-Z0-9]+:", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
             var errorSummaryPattern = new System.Text.RegularExpressions.Regex(@"^\d+\s+Error\(s\)", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
 
             foreach (string line in errorOutput.Split(Environment.NewLine))
             {
-                if (line.Contains("error", StringComparison.OrdinalIgnoreCase) &&
-                    !errorSummaryPattern.IsMatch(line.Trim()))
+                if (errorPattern.IsMatch(line) && !errorSummaryPattern.IsMatch(line.Trim()))
                 {
                     parsedErrors.Add(line.Trim());
                 }

@@ -8,6 +8,6 @@ namespace Roklem_Migrator.Services.Interfaces
 {
     internal interface IBuildProjectService
     {
-        (bool sucess, List<string> errors) BuildProject(string slnFilePath);
+        (bool success, List<string> errors) BuildProject(string slnFilePath);
     }
 }
