@@ -55,10 +55,10 @@ namespace Roklem_Migrator.Services
 
             (bool buildSuccess, List<string> buildErrors) = _BuildProjectService.BuildProject(slnFilePath);
 
-            List<string> roslynAnalyzerErrors = _RoslynAnalyzerService.AnalyzeAsync(slnFilePath).GetAwaiter().GetResult();
+            Dictionary<string, List<string>> roslynAnalyzerErrors = _RoslynAnalyzerService.AnalyzeAsync(slnFilePath).GetAwaiter().GetResult();
             bool noRoslynErrors = roslynAnalyzerErrors.Count == 0;
 
-            while (!buildSuccess && llmIterations > 0)
+            while (!buildSuccess && !noRoslynErrors && llmIterations > 0)
             {
                 currentStep = 0;
                 Console.WriteLine("Attempting to fix errors");

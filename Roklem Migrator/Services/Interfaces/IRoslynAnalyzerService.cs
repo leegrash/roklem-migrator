@@ -8,6 +8,6 @@ namespace Roklem_Migrator.Services.Interfaces
 {
     internal interface IRoslynAnalyzerService
     {
-        Task<List<string>> AnalyzeAsync(string slnPath);
+        Task<Dictionary<string, List<string>>> AnalyzeAsync(string slnFilePath);
     }
 }

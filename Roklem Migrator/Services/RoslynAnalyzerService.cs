@@ -6,8 +6,16 @@ namespace Roklem_Migrator.Services
 {
     internal class RoslynAnalyzerService : IRoslynAnalyzerService
     {
-        public async Task<List<string>> AnalyzeAsync(string slnFilePath)
+        private readonly ISpinnerService _spinnerService;
+        public RoslynAnalyzerService(ISpinnerService spinnerService)
         {
+            _spinnerService = spinnerService;
+        }
+
+        public async Task<Dictionary<string, List<string>>> AnalyzeAsync(string slnFilePath)
+        {
+            _spinnerService.StartSpinner("Analyzing migrated project using Roslyn...", "Roslyn Analysis completed.");
+
             var errors = new List<string>();
 
             using var workspace = MSBuildWorkspace.Create();
@@ -26,7 +34,44 @@ namespace Roklem_Migrator.Services
                 }
             }
 
-            return errors;
+            var categorizedErrors = CategorizeErrorsByFile(errors);
+
+            _spinnerService.StopSpinner();
+
+            return categorizedErrors;
+        }
+
+        private Dictionary<string, List<string>> CategorizeErrorsByFile(List<string> errors)
+        {
+            var categorizedErrors = new Dictionary<string, List<string>>();
+
+            foreach (var error in errors)
+            {
+                int parenIndex = error.IndexOf('(');
+                if (parenIndex > 0)
+                {
+                    string filePath = error.Substring(0, parenIndex).Trim();
+
+                    string errorWithoutFilePath = error.Substring(parenIndex);
+
+                    if (!categorizedErrors.ContainsKey(filePath))
+                    {
+                        categorizedErrors[filePath] = new List<string>();
+                    }
+                    categorizedErrors[filePath].Add(errorWithoutFilePath.Trim());
+                }
+                else
+                {
+                    const string unknownKey = "<unknown file>";
+                    if (!categorizedErrors.ContainsKey(unknownKey))
+                    {
+                        categorizedErrors[unknownKey] = new List<string>();
+                    }
+                    categorizedErrors[unknownKey].Add(error.Trim());
+                }
+            }
+
+            return categorizedErrors;
         }
     }
 }
