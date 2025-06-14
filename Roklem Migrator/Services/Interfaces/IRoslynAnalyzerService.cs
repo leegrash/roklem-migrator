@@ -8,6 +8,6 @@ namespace Roklem_Migrator.Services.Interfaces
 {
     internal interface IRoslynAnalyzerService
     {
-        Task<List<string>> AnalyzeAsync(string slnPath, List<string> vbprojPaths);
+        Task<List<string>> AnalyzeAsync(string slnPath);
     }
 }

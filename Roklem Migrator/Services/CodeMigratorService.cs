@@ -25,7 +25,7 @@ namespace Roklem_Migrator.Services
         {
             try
             {
-                (List<string> files, string? slnFilePath, List<string> vbprojPaths) = _FileLocatorService.locateFiles(srcDir);
+                (List<string> files, string? slnFilePath) = _FileLocatorService.locateFiles(srcDir);
 
                 if (slnFilePath != null)
                 {
@@ -35,10 +35,6 @@ namespace Roklem_Migrator.Services
                 {
                     throw new Exception("Solution file not found in source directory.");
                 }
-
-                vbprojPaths = vbprojPaths
-                    .Select(vbproj => Path.Combine(targetDir, vbproj))
-                    .ToList();
 
                 Console.WriteLine($"Located {files.Count} files");
 
@@ -59,7 +55,7 @@ namespace Roklem_Migrator.Services
 
                 TargetVersionResponse targetVersionResponse = _TargetVersionService.GetTargetVersion(supportedVersions).Result;
 
-                _FileMigratorService.MigrateFiles(filesToMigrate, srcDir, targetDir, targetVersionResponse, slnFilePath, vbprojPaths, llmIterations);
+                _FileMigratorService.MigrateFiles(filesToMigrate, srcDir, targetDir, targetVersionResponse, slnFilePath, llmIterations);
 
                 return true;
             }

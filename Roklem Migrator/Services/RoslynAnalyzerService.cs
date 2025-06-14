@@ -1,16 +1,12 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.MSBuild;
-using Microsoft.CodeAnalysis.VisualBasic;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Roklem_Migrator.Services.Interfaces;
 
 namespace Roklem_Migrator.Services
 {
     internal class RoslynAnalyzerService : IRoslynAnalyzerService
     {
-        public async Task<List<string>> AnalyzeAsync(string slnFilePath, List<string> vbprojPaths)
+        public async Task<List<string>> AnalyzeAsync(string slnFilePath)
         {
             var errors = new List<string>();
 
