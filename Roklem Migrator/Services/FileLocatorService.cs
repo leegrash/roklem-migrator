@@ -8,6 +8,8 @@ namespace Roklem_Migrator.Services
         {
             List<string> files = new List<string>();
             string? slnFilePath = null;
+            List<string> vbprojPaths = new List<string>();
+
             try
             {
                 var absolutePaths = Directory.GetFiles(srcDir, "*.*", SearchOption.AllDirectories);
@@ -21,6 +23,11 @@ namespace Roklem_Migrator.Services
                 {
                     slnFilePath = Path.GetRelativePath(srcDir, slnAbsolutePath);
                 }
+
+                vbprojPaths = absolutePaths
+                    .Where(f => Path.GetExtension(f).Equals(".vbproj", StringComparison.OrdinalIgnoreCase))
+                    .Select(f => Path.GetRelativePath(srcDir, f))
+                    .ToList();
             }
             catch (Exception ex)
             {

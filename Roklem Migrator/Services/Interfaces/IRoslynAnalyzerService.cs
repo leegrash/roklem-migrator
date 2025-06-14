@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Roklem_Migrator.Services.Interfaces
 {
-    internal interface IBuildProjectService
+    internal interface IRoslynAnalyzerService
     {
-        (bool success, List<string> errors) BuildProject(string slnFilePath);
+        Task<List<string>> AnalyzeAsync(string slnPath);
     }
 }

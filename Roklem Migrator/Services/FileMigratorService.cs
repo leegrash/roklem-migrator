@@ -12,8 +12,9 @@ namespace Roklem_Migrator.Services
         private readonly IInvokeAzureAIRequestResponseService _InvokeAzureAIRequestResponseService;
         private readonly IFileHandlerService _FileHandlerService;
         private readonly IBuildProjectService _BuildProjectService;
+        private readonly IRoslynAnalyzerService _RoslynAnalyzerService;
 
-        public FileMigratorService(IProgressBarService progressBarService, IFileReaderService fileReaderService, IFileWriterService fileWriterService, IInvokeAzureAIRequestResponseService invokeAzureAIRequestResponseService, IFileHandlerService fileHandlerService, IBuildProjectService buildProjectService)
+        public FileMigratorService(IProgressBarService progressBarService, IFileReaderService fileReaderService, IFileWriterService fileWriterService, IInvokeAzureAIRequestResponseService invokeAzureAIRequestResponseService, IFileHandlerService fileHandlerService, IBuildProjectService buildProjectService, IRoslynAnalyzerService roslynAnalyzerService)
         {
             _ProgressBarService = progressBarService;
             _FileReaderService = fileReaderService;
@@ -21,6 +22,7 @@ namespace Roklem_Migrator.Services
             _InvokeAzureAIRequestResponseService = invokeAzureAIRequestResponseService;
             _FileHandlerService = fileHandlerService;
             _BuildProjectService = buildProjectService;
+            _RoslynAnalyzerService = roslynAnalyzerService;
         }
 
         public void MigrateFiles(List<string> files, string srcDir, string targetDir, TargetVersionResponse targetVersionResponse, string slnFilePath, int llmIterations)
@@ -53,11 +55,14 @@ namespace Roklem_Migrator.Services
 
             (bool buildSuccess, List<string> buildErrors) = _BuildProjectService.BuildProject(slnFilePath);
 
+            List<string> roslynAnalyzerErrors = _RoslynAnalyzerService.AnalyzeAsync(slnFilePath).GetAwaiter().GetResult();
+            bool noRoslynErrors = roslynAnalyzerErrors.Count == 0;
+
             while (!buildSuccess && llmIterations > 0)
             {
                 currentStep = 0;
                 Console.WriteLine("Attempting to fix errors");
-                
+
                 foreach (var file in files)
                 {
                     currentStep++;
