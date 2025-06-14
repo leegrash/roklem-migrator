@@ -33,7 +33,7 @@ class Program
         var filePathHandler = serviceProvider.GetRequiredService<IFilePathHandlerService>();
         var codeMigrator = serviceProvider.GetRequiredService<ICodeMigratorService>();
 
-        int llmIterations = 3;
+        int llmIterations = 5;
 
         (string srcDir, string targetDir) = filePathHandler.GetSrcAndTargetDirFromArg(args);
 
