@@ -10,7 +10,7 @@ namespace Roklem_Migrator.Services
 {
     internal class RoslynAnalyzerService : IRoslynAnalyzerService
     {
-        public async Task<(bool, List<string>)> AnalyzeAsync(string slnFilePath)
+        public async Task<List<string>> AnalyzeAsync(string slnFilePath, List<string> vbprojPaths)
         {
             var errors = new List<string>();
 
@@ -30,7 +30,7 @@ namespace Roklem_Migrator.Services
                 }
             }
 
-            return (errors.Count == 0, errors);
+            return errors;
         }
     }
 }

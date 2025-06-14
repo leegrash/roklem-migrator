@@ -25,9 +25,9 @@ namespace Roklem_Migrator.Services
         {
             try
             {
-                (List<string> files, string? slnFilePath )= _FileLocatorService.locateFiles(srcDir);
+                (List<string> files, string? slnFilePath, List<string> vbprojPaths) = _FileLocatorService.locateFiles(srcDir);
 
-                if(slnFilePath != null)
+                if (slnFilePath != null)
                 {
                     slnFilePath = Path.Combine(targetDir, slnFilePath);
                 }
@@ -36,7 +36,11 @@ namespace Roklem_Migrator.Services
                     throw new Exception("Solution file not found in source directory.");
                 }
 
-                    Console.WriteLine($"Located {files.Count} files");
+                vbprojPaths = vbprojPaths
+                    .Select(vbproj => Path.Combine(targetDir, vbproj))
+                    .ToList();
+
+                Console.WriteLine($"Located {files.Count} files");
 
                 var (filesToMigrate, filesToCopy) = _FileHandlerService.distinguisFiles(files);
 
@@ -51,11 +55,11 @@ namespace Roklem_Migrator.Services
 
                 List<string> packageDependencies = _DependencyHandlerService.getPackageDependencies(filesToMigrate, srcDir);
 
-                Dictionary < string, List<string> > supportedVersions = _NuGetAPIService.GetSupportedVersionsAsync(packageDependencies).GetAwaiter().GetResult();
+                Dictionary<string, List<string>> supportedVersions = _NuGetAPIService.GetSupportedVersionsAsync(packageDependencies).GetAwaiter().GetResult();
 
                 TargetVersionResponse targetVersionResponse = _TargetVersionService.GetTargetVersion(supportedVersions).Result;
 
-                _FileMigratorService.MigrateFiles(filesToMigrate, srcDir, targetDir, targetVersionResponse, slnFilePath, llmIterations);
+                _FileMigratorService.MigrateFiles(filesToMigrate, srcDir, targetDir, targetVersionResponse, slnFilePath, vbprojPaths, llmIterations);
 
                 return true;
             }

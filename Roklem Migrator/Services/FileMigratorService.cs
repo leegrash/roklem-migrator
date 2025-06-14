@@ -25,7 +25,7 @@ namespace Roklem_Migrator.Services
             _RoslynAnalyzerService = roslynAnalyzerService;
         }
 
-        public void MigrateFiles(List<string> files, string srcDir, string targetDir, TargetVersionResponse targetVersionResponse, string slnFilePath, int llmIterations)
+        public void MigrateFiles(List<string> files, string srcDir, string targetDir, TargetVersionResponse targetVersionResponse, string slnFilePath, List<string> vbprojPaths, int llmIterations)
         {
             List<string> migrationLog = new List<string>();
 
@@ -55,9 +55,8 @@ namespace Roklem_Migrator.Services
 
             (bool buildSuccess, List<string> buildErrors) = _BuildProjectService.BuildProject(slnFilePath);
 
-            var roslynAnalysisResult = _RoslynAnalyzerService.AnalyzeAsync("C:\\Git\\roklem\\Tests\\v3\\Nodesoft-web\\MVC\\Nodesoft\\Nodesoft.vbproj").GetAwaiter().GetResult();
-            bool analyzeSuccess = roslynAnalysisResult.success;
-            List<string> roslynErrors = roslynAnalysisResult.errors;
+            List<string> roslynAnalyzerErrors = _RoslynAnalyzerService.AnalyzeAsync(slnFilePath, vbprojPaths).GetAwaiter().GetResult();
+            bool noRoslynErrors = roslynAnalyzerErrors.Count == 0;
 
             while (!buildSuccess && llmIterations > 0)
             {
