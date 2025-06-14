@@ -58,7 +58,9 @@ namespace Roklem_Migrator.Services
             Dictionary<string, List<string>> roslynAnalyzerErrors = _RoslynAnalyzerService.AnalyzeAsync(slnFilePath).GetAwaiter().GetResult();
             bool noRoslynErrors = roslynAnalyzerErrors.Count == 0;
 
-            while (!buildSuccess && !noRoslynErrors && llmIterations > 0)
+            int iterationsCompleted = 0;
+
+            while (!buildSuccess && !noRoslynErrors && iterationsCompleted <= llmIterations)
             {
                 currentStep = 0;
                 Console.WriteLine("Attempting to fix errors");
@@ -70,7 +72,14 @@ namespace Roklem_Migrator.Services
 
                     try
                     {
-                        FixBuildErrors(Path.Combine(targetDir, file), targetVersionResponse.TargetVersion, _FileHandlerService.getFileName(file), buildErrors);
+                        if(roslynAnalyzerErrors.TryGetValue(file, out var roslynErrors))
+                        {
+                            FixMigrationErrors(Path.Combine(targetDir, file), targetVersionResponse.TargetVersion, _FileHandlerService.getFileName(file), buildErrors, roslynErrors);
+                        }
+                        else
+                        {
+                            FixMigrationErrors(Path.Combine(targetDir, file), targetVersionResponse.TargetVersion, _FileHandlerService.getFileName(file), buildErrors);
+                        }
                     }
                     catch (Exception e)
                     {
@@ -79,7 +88,11 @@ namespace Roklem_Migrator.Services
                 }
                 _ProgressBarService.stopProgressBar("Attempt to fix build errors completed.");
                 (buildSuccess, buildErrors) = _BuildProjectService.BuildProject(slnFilePath);
-                llmIterations--;
+
+                roslynAnalyzerErrors = _RoslynAnalyzerService.AnalyzeAsync(slnFilePath).GetAwaiter().GetResult();
+                noRoslynErrors = roslynAnalyzerErrors.Count == 0;
+
+                iterationsCompleted++;
             }
 
             if (buildSuccess)
@@ -134,15 +147,15 @@ namespace Roklem_Migrator.Services
             return promptBuilder.ToString();
         }
 
-        private void FixBuildErrors(string filePath, string targetVersion, string fileName, List<string> buildErrors)
+        private void FixMigrationErrors(string filePath, string targetVersion, string fileName, List<string> buildErrors, List<string>? roslynErrors = null)
         {
             IEnumerable<string> fileContent = _FileReaderService.ReadFile(filePath);
-            string errorFixPrompt = GenerateErrorFixPrompt(fileContent, targetVersion, fileName, buildErrors);
+            string errorFixPrompt = GenerateErrorFixPrompt(fileContent, targetVersion, fileName, buildErrors, roslynErrors);
             var response = _InvokeAzureAIRequestResponseService.InvokeRequestResponse(errorFixPrompt, 1).GetAwaiter().GetResult();
             _FileWriterService.WriteToFile(filePath, response);
         }
 
-        private string GenerateErrorFixPrompt(IEnumerable<string> fileContent, string targetVersion, string fileName, List<string> buildErrors)
+        private string GenerateErrorFixPrompt(IEnumerable<string> fileContent, string targetVersion, string fileName, List<string> buildErrors, List<string> roslynErrors)
         {
             StringBuilder promptBuilder = new StringBuilder();
             promptBuilder.AppendLine($"You are a .net migration expert. The following file named {fileName} is part of a visual basic project that has been migrated from .net framework to .net core with the following target version: {targetVersion}");
@@ -160,7 +173,17 @@ namespace Roklem_Migrator.Services
                 promptBuilder.AppendLine(line);
             }
 
+            if (roslynErrors != null)
+            {
+                promptBuilder.AppendLine("The following Roslyn errors were detected in the file:");
+                foreach (var error in roslynErrors)
+                {
+                    promptBuilder.AppendLine($"- {error}");
+                }
+            }
+
             promptBuilder.AppendLine("Return the code with the fixes applied. Comment what you have changed at the end. Do not include any markdown code block syntax (e.g., ,xml, ```json, etc.). The response should only contain executable code and comments in the given format, no other text or characters.");
+
 
             return promptBuilder.ToString();
         }
