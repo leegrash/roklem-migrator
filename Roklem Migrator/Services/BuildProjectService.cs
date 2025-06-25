@@ -47,8 +47,6 @@ namespace Roklem_Migrator.Services
                     errorList.AddRange(ParseErrors(output));
                 }
 
-                Console.WriteLine("\nBuild Output:");
-                Console.WriteLine(output);
                 Console.WriteLine("\nBuild Errors:");
                 _CommonService.printList(errorList);
             }

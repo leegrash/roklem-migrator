@@ -13,8 +13,9 @@ namespace Roklem_Migrator.Services
         private readonly IFileHandlerService _FileHandlerService;
         private readonly IBuildProjectService _BuildProjectService;
         private readonly IRoslynAnalyzerService _RoslynAnalyzerService;
+        private readonly ILoggerService _LoggerService;
 
-        public FileMigratorService(IProgressBarService progressBarService, IFileReaderService fileReaderService, IFileWriterService fileWriterService, IInvokeAzureAIRequestResponseService invokeAzureAIRequestResponseService, IFileHandlerService fileHandlerService, IBuildProjectService buildProjectService, IRoslynAnalyzerService roslynAnalyzerService)
+        public FileMigratorService(IProgressBarService progressBarService, IFileReaderService fileReaderService, IFileWriterService fileWriterService, IInvokeAzureAIRequestResponseService invokeAzureAIRequestResponseService, IFileHandlerService fileHandlerService, IBuildProjectService buildProjectService, IRoslynAnalyzerService roslynAnalyzerService, ILoggerService loggerService)
         {
             _ProgressBarService = progressBarService;
             _FileReaderService = fileReaderService;
@@ -23,6 +24,7 @@ namespace Roklem_Migrator.Services
             _FileHandlerService = fileHandlerService;
             _BuildProjectService = buildProjectService;
             _RoslynAnalyzerService = roslynAnalyzerService;
+            _LoggerService = loggerService;
         }
 
         public void MigrateFiles(List<string> files, string srcDir, string targetDir, TargetVersionResponse targetVersionResponse, string slnFilePath, int llmIterations)
@@ -63,7 +65,7 @@ namespace Roklem_Migrator.Services
             while (!buildSuccess && !noRoslynErrors && iterationsCompleted <= llmIterations)
             {
                 currentStep = 0;
-                Console.WriteLine("Attempting to fix errors");
+                Console.WriteLine($"Attempting to fix errors, iteration: {iterationsCompleted + 1}");
 
                 foreach (var file in files)
                 {
@@ -89,7 +91,12 @@ namespace Roklem_Migrator.Services
                 _ProgressBarService.stopProgressBar("Attempt to fix build errors completed.");
                 (buildSuccess, buildErrors) = _BuildProjectService.BuildProject(slnFilePath);
 
-                roslynAnalyzerErrors = _RoslynAnalyzerService.AnalyzeAsync(slnFilePath).GetAwaiter().GetResult();
+                Dictionary<string, List<string>> newRoslynAnalyzerErrors = _RoslynAnalyzerService.AnalyzeAsync(slnFilePath).GetAwaiter().GetResult();
+
+                _LoggerService.LogFixResult(targetDir, roslynAnalyzerErrors, newRoslynAnalyzerErrors);
+
+                roslynAnalyzerErrors = newRoslynAnalyzerErrors;
+
                 noRoslynErrors = roslynAnalyzerErrors.Count == 0;
 
                 iterationsCompleted++;
