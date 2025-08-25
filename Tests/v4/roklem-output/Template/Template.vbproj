@@ -1,0 +1,54 @@
+<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <UseWPF>false</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <RootNamespace>NodeSoft</RootNamespace>
+    <AssemblyName>Template</AssemblyName>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Oracle.ManagedDataAccess" Version="4.112.3" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Application.vb" />
+    <Compile Include="Argument.vb" />
+    <Compile Include="ArgumentHandler.vb" />
+    <Compile Include="AssemblyInfo.vb" />
+    <Compile Include="Common.vb" />
+    <Compile Include="frmAbout.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmMain.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmSplash.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ProcessUtilities.vb" />
+    <Compile Include="RegUtilities.vb" />
+    <Compile Include="StringUtilities.vb" />
+    <Compile Include="SysUtilities.vb" />
+    <Compile Include="VersionCheck.vb" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="frmAbout.resX" LogicalName="NodeSoft.frmAbout.resources" />
+    <EmbeddedResource Include="frmMain.resX" LogicalName="NodeSoft.frmMain.resources" />
+    <EmbeddedResource Include="frmSplash.resX" LogicalName="NodeSoft.frmSplash.resources" />
+  </ItemGroup>
+
+</Project>
+
+<!-- Changes made:
+1. Verified that there are no duplicate EmbeddedResource declarations to avoid output path conflicts.
+2. Each EmbeddedResource has a unique LogicalName to ensure no collisions during the build process. -->
