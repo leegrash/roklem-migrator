@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Windows.Forms" Version="6.0.0" />
+  </ItemGroup>
+</Project>
+
+# Changes made:
+# - Updated the version of System.Windows.Forms package reference from 5.0.0 to 6.0.0 to match the project target framework.

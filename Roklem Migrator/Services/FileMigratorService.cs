@@ -93,6 +93,7 @@ namespace Roklem_Migrator.Services
 
                 Dictionary<string, List<string>> newRoslynAnalyzerErrors = _RoslynAnalyzerService.AnalyzeAsync(slnFilePath).GetAwaiter().GetResult();
 
+                
                 _LoggerService.LogFixResult(targetDir, roslynAnalyzerErrors, newRoslynAnalyzerErrors);
 
                 roslynAnalyzerErrors = newRoslynAnalyzerErrors;
